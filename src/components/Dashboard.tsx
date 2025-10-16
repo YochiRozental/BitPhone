@@ -14,6 +14,7 @@ import {
 import * as api from "../api/apiService";
 import type { User } from "../types";
 import TransactionHistory from "./TransactionHistory";
+import PaymentRequestsList from "./PaymentRequestsList";
 
 interface DashboardProps {
     user: User;
@@ -53,6 +54,10 @@ export default function Dashboard({ user }: DashboardProps) {
     const [depositAmount, setDepositAmount] = useState("");
     const [withdrawAmount, setWithdrawAmount] = useState("");
     const [transferDetails, setTransferDetails] = useState({ recipient: "", amount: "" });
+    const [paymentRequest, setPaymentRequest] = useState({ phone: "", amount: "" });
+    const [requestDetails, setRequestDetails] = useState({ recipient: "", amount: "" });
+    const [showRequests, setShowRequests] = useState(false);
+    const [showBalance, setShowBalance] = useState(false);
 
     const handleApiCall = async (apiFunc: () => Promise<any>) => {
         setMessage(null);
@@ -70,7 +75,11 @@ export default function Dashboard({ user }: DashboardProps) {
     };
 
     const handleCheckBalance = () => {
-        handleApiCall(() => api.checkBalance(user));
+        setShowBalance(!showBalance);
+        console.log(showBalance);
+        if (showBalance) {
+            handleApiCall(() => api.checkBalance(user));
+        }
     };
 
     const handleDeposit = async () => {
@@ -90,6 +99,21 @@ export default function Dashboard({ user }: DashboardProps) {
         if (success) setTransferDetails({ recipient: "", amount: "" });
     };
 
+    const handlePaymentRequest = async () => {
+        const success = await handleApiCall(() =>
+            api.requestPayment(user, paymentRequest.phone, +paymentRequest.amount)
+        );
+        if (success) setPaymentRequest({ phone: "", amount: "" });
+    };
+
+    const handleRequestPayment = async () => {
+        const success = await handleApiCall(() =>
+            api.requestPayment(user, requestDetails.recipient, +requestDetails.amount)
+        );
+        if (success) setRequestDetails({ recipient: "", amount: "" });
+    };
+
+
     return (
         <Box sx={{ p: 3, direction: "rtl" }}>
             <Stack
@@ -108,13 +132,22 @@ export default function Dashboard({ user }: DashboardProps) {
                     </Button>
 
                     <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={() => setShowRequests(!showRequests)}
+                    >
+                        {showRequests ? "הסתר בקשות תשלום" : "הצג בקשות תשלום"}
+                    </Button>
+
+                    <Button
                         variant="contained"
                         color="primary"
                         onClick={handleCheckBalance}
                         disabled={isLoading}
                     >
-                        בדוק יתרה
+                        {showBalance ? "הסתר יתרה" : "הצג יתרה"}
                     </Button>
+
                 </Stack>
             </Stack>
 
@@ -126,6 +159,9 @@ export default function Dashboard({ user }: DashboardProps) {
                     </Box>
                 )}
                 {showHistory && <TransactionHistory user={user} />}
+                {showRequests && <PaymentRequestsList user={user} />}
+                {showBalance}
+
             </Stack>
 
             <Divider sx={{ my: 3 }} />
@@ -206,6 +242,40 @@ export default function Dashboard({ user }: DashboardProps) {
                         </Button>
                     </Stack>
                 </ActionCard>
+
+                <ActionCard title="בקשת תשלום">
+                    <Stack spacing={2} sx={{ flexGrow: 1, justifyContent: "space-between" }}>
+                        <TextField
+                            fullWidth
+                            label="טלפון מבוקש"
+                            value={paymentRequest.phone}
+                            onChange={(e) =>
+                                setPaymentRequest({ ...paymentRequest, phone: e.target.value })
+                            }
+                        />
+                        <TextField
+                            fullWidth
+                            label="סכום"
+                            type="number"
+                            value={paymentRequest.amount}
+                            onChange={(e) =>
+                                setPaymentRequest({ ...paymentRequest, amount: e.target.value })
+                            }
+                        />
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            color="warning"
+                            onClick={handlePaymentRequest}
+                            disabled={
+                                isLoading || !paymentRequest.phone || !paymentRequest.amount
+                            }
+                        >
+                            בקש תשלום
+                        </Button>
+                    </Stack>
+                </ActionCard>
+
             </Box>
         </Box>
     );

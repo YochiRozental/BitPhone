@@ -77,7 +77,6 @@ export default function Layout({
             >
                 <Container maxWidth="sm">
                     <Typography variant="body2" color="text.secondary">
-                        © {new Date().getFullYear()} בנק ריאקט בע"מ. כל הזכויות שמורות.
                     </Typography>
                 </Container>
             </Box>

@@ -76,3 +76,19 @@ export const getTransactionHistory = (user: User): Promise<ApiResponse> =>
         id_number: user.idNum,
         secret_code: user.secret,
     });
+
+export async function getPaymentRequests(user: User) {
+    const res = await fetch(`/api/payment-requests?userId=${user.idNum}`);
+    if (!res.ok) throw new Error("Failed to fetch payment requests");
+    return await res.json();
+}
+
+export async function respondToPaymentRequest(user: User, requestId: string, approve: boolean) {
+    const res = await fetch(`/api/payment-requests/${requestId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.idNum, approve }),
+    });
+    if (!res.ok) throw new Error("Failed to update payment request");
+    return await res.json();
+}
