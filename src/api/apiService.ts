@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { User, ApiResponse, Transaction } from "../types";
+import type { User, ApiResponse } from "../types";
 
 const API_BASE_URL = "https://rutg.pythonanywhere.com";
 
@@ -61,7 +61,15 @@ export const approvePayment = (user: User, requestId: number) =>
         request_id: requestId,
     });
 
-export const getTransactionHistory = (user: User): Promise<ApiResponse<Transaction[]>> =>
+// export const getTransactionHistory = (user: User): Promise<ApiResponse<Transaction[]>> =>
+//     makeWebApiRequest({
+//         action: "get_history",
+//         phone_number: user.phone,
+//         id_number: user.idNum,
+//         secret_code: user.secret,
+//     });
+
+export const getTransactionHistory = (user: User): Promise<ApiResponse> =>
     makeWebApiRequest({
         action: "get_history",
         phone_number: user.phone,

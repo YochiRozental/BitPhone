@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
     Box,
     Typography,
@@ -6,12 +6,11 @@ import {
     TextField,
     Card,
     CardContent,
-    Grid,
     Stack,
     CircularProgress,
     Divider,
+    Alert,
 } from "@mui/material";
-// import Grid from "@mui/material/Unstable_Grid2";
 import * as api from "../api/apiService";
 import type { User } from "../types";
 import TransactionHistory from "./TransactionHistory";
@@ -21,183 +20,193 @@ interface DashboardProps {
     onLogout: () => void;
 }
 
-export default function Dashboard({ user, onLogout }: DashboardProps) {
-    const [message, setMessage] = useState("");
+interface ActionCardProps {
+    title: string;
+    children: ReactNode;
+}
+
+function ActionCard({ title, children }: ActionCardProps) {
+    return (
+        <Card
+            sx={{
+                flex: "1 1 300px",
+                minWidth: "300px",
+                display: "flex",
+                flexDirection: "column",
+            }}
+        >
+            <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+                <Typography variant="h6" gutterBottom>
+                    {title}
+                </Typography>
+                {children}
+            </CardContent>
+        </Card>
+    );
+}
+
+export default function Dashboard({ user }: DashboardProps) {
+    const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [showHistory, setShowHistory] = useState(false);
-    const [deposit, setDeposit] = useState("");
-    const [withdraw, setWithdraw] = useState("");
-    const [transfer, setTransfer] = useState({ recipient: "", amount: "" });
 
-    const handleApi = async (fn: () => Promise<any>) => {
+    const [depositAmount, setDepositAmount] = useState("");
+    const [withdrawAmount, setWithdrawAmount] = useState("");
+    const [transferDetails, setTransferDetails] = useState({ recipient: "", amount: "" });
+
+    const handleApiCall = async (apiFunc: () => Promise<any>) => {
+        setMessage(null);
         setIsLoading(true);
-        const res = await fn();
-        setMessage(res.message || JSON.stringify(res));
-        setIsLoading(false);
+        try {
+            const res = await apiFunc();
+            setMessage({ text: res.message || JSON.stringify(res), type: "success" });
+            return true;
+        } catch (error: any) {
+            setMessage({ text: error.message || "An unexpected error occurred.", type: "error" });
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleCheckBalance = () => {
+        handleApiCall(() => api.checkBalance(user));
+    };
+
+    const handleDeposit = async () => {
+        const success = await handleApiCall(() => api.depositFunds(user, +depositAmount));
+        if (success) setDepositAmount("");
+    };
+
+    const handleWithdraw = async () => {
+        const success = await handleApiCall(() => api.withdrawFunds(user, +withdrawAmount));
+        if (success) setWithdrawAmount("");
+    };
+
+    const handleTransfer = async () => {
+        const success = await handleApiCall(() =>
+            api.transferFunds(user, transferDetails.recipient, +transferDetails.amount)
+        );
+        if (success) setTransferDetails({ recipient: "", amount: "" });
     };
 
     return (
         <Box sx={{ p: 3, direction: "rtl" }}>
-            {/* כותרת עליונה */}
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 3,
-                }}
+            <Stack
+                direction={{ xs: "column", sm: "row" }}
+                justifyContent="space-between"
+                alignItems="center"
+                spacing={2}
+                sx={{ mb: 3 }}
             >
-                <Typography variant="h5" fontWeight="bold">
-                    ברוך הבא, {user.name || `משתמש ${user.phone}`}
-                </Typography>
-                <Stack direction="row" spacing={2}>
+                <Stack direction="row" spacing={2} justifyContent="center">
                     <Button
                         variant="outlined"
-                        color="primary"
                         onClick={() => setShowHistory(!showHistory)}
                     >
                         {showHistory ? "הסתר היסטוריה" : "הצג היסטוריה"}
                     </Button>
-                    <Button variant="contained" color="error" onClick={onLogout}>
-                        התנתק
+
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleCheckBalance}
+                        disabled={isLoading}
+                    >
+                        בדוק יתרה
                     </Button>
                 </Stack>
-            </Box>
+            </Stack>
 
-            {message && (
-                <Card sx={{ mb: 3, bgcolor: "#e3f2fd" }}>
-                    <CardContent>
-                        <Typography variant="body1">{message}</Typography>
-                    </CardContent>
-                </Card>
-            )}
-
-            {isLoading && (
-                <Box display="flex" justifyContent="center" my={2}>
-                    <CircularProgress />
-                </Box>
-            )}
-
-            {showHistory && (
-                <Box my={3}>
-                    <TransactionHistory user={user} />
-                </Box>
-            )}
+            <Stack spacing={3} my={3}>
+                {message && <Alert severity={message.type}>{message.text}</Alert>}
+                {isLoading && (
+                    <Box display="flex" justifyContent="center">
+                        <CircularProgress />
+                    </Box>
+                )}
+                {showHistory && <TransactionHistory user={user} />}
+            </Stack>
 
             <Divider sx={{ my: 3 }} />
 
-            {/* אזור פעולות */}
-            <Grid container spacing={3}>
-                <Grid xs={12} md={6} lg={3}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h6" gutterBottom>
-                                בדיקת יתרה
-                            </Typography>
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                color="primary"
-                                onClick={() => handleApi(() => api.checkBalance(user))}
-                            >
-                                בדוק יתרה
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </Grid>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+                <ActionCard title="הפקדה">
+                    <Stack spacing={2} sx={{ flexGrow: 1, justifyContent: "space-between" }}>
+                        <TextField
+                            fullWidth
+                            type="number"
+                            label="סכום"
+                            value={depositAmount}
+                            onChange={(e) => setDepositAmount(e.target.value)}
+                        />
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            onClick={handleDeposit}
+                            disabled={isLoading || !depositAmount}
+                        >
+                            הפקד
+                        </Button>
+                    </Stack>
+                </ActionCard>
 
-                <Grid xs={12} md={6} lg={3}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h6" gutterBottom>
-                                הפקדה
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                type="number"
-                                label="סכום"
-                                value={deposit}
-                                onChange={(e) => setDeposit(e.target.value)}
-                                sx={{ mb: 2 }}
-                            />
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                onClick={() => handleApi(() => api.depositFunds(user, +deposit))}
-                            >
-                                הפקד
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </Grid>
+                <ActionCard title="משיכה">
+                    <Stack spacing={2} sx={{ flexGrow: 1, justifyContent: "space-between" }}>
+                        <TextField
+                            fullWidth
+                            type="number"
+                            label="סכום"
+                            value={withdrawAmount}
+                            onChange={(e) => setWithdrawAmount(e.target.value)}
+                        />
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            color="secondary"
+                            onClick={handleWithdraw}
+                            disabled={isLoading || !withdrawAmount}
+                        >
+                            משוך
+                        </Button>
+                    </Stack>
+                </ActionCard>
 
-                <Grid xs={12} md={6} lg={3}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h6" gutterBottom>
-                                משיכה
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                type="number"
-                                label="סכום"
-                                value={withdraw}
-                                onChange={(e) => setWithdraw(e.target.value)}
-                                sx={{ mb: 2 }}
-                            />
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                color="secondary"
-                                onClick={() => handleApi(() => api.withdrawFunds(user, +withdraw))}
-                            >
-                                משוך
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                <Grid xs={12} md={6} lg={3}>
-                    <Card>
-                        <CardContent>
-                            <Typography variant="h6" gutterBottom>
-                                העברה
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                label="טלפון יעד"
-                                value={transfer.recipient}
-                                onChange={(e) =>
-                                    setTransfer({ ...transfer, recipient: e.target.value })
-                                }
-                                sx={{ mb: 2 }}
-                            />
-                            <TextField
-                                fullWidth
-                                label="סכום"
-                                type="number"
-                                value={transfer.amount}
-                                onChange={(e) =>
-                                    setTransfer({ ...transfer, amount: e.target.value })
-                                }
-                                sx={{ mb: 2 }}
-                            />
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                color="success"
-                                onClick={() =>
-                                    handleApi(() =>
-                                        api.transferFunds(user, transfer.recipient, +transfer.amount)
-                                    )
-                                }
-                            >
-                                העבר
-                            </Button>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
+                <ActionCard title="העברה">
+                    <Stack spacing={2} sx={{ flexGrow: 1, justifyContent: "space-between" }}>
+                        <TextField
+                            fullWidth
+                            label="טלפון יעד"
+                            value={transferDetails.recipient}
+                            onChange={(e) =>
+                                setTransferDetails({ ...transferDetails, recipient: e.target.value })
+                            }
+                        />
+                        <TextField
+                            fullWidth
+                            label="סכום"
+                            type="number"
+                            value={transferDetails.amount}
+                            onChange={(e) =>
+                                setTransferDetails({ ...transferDetails, amount: e.target.value })
+                            }
+                        />
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            color="success"
+                            onClick={handleTransfer}
+                            disabled={
+                                isLoading ||
+                                !transferDetails.recipient ||
+                                !transferDetails.amount
+                            }
+                        >
+                            העבר
+                        </Button>
+                    </Stack>
+                </ActionCard>
+            </Box>
         </Box>
     );
 }
