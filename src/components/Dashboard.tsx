@@ -164,14 +164,13 @@ export default function Dashboard({ user }: DashboardProps) {
             </Stack>
 
             <Stack spacing={3} my={3}>
-                
+
                 {isLoading && (
                     <Box display="flex" justifyContent="center">
                         <CircularProgress />
                     </Box>
                 )}
 
-                {/* הצגת היתרה המעוצבת - נשארת */}
                 {showBalance && balance !== null && (
                     <Card sx={{
                         p: 3,
@@ -188,7 +187,6 @@ export default function Dashboard({ user }: DashboardProps) {
                         </Typography>
                     </Card>
                 )}
-                {/* סוף הצגת היתרה המעוצבת */}
 
                 {showHistory && <TransactionHistory user={user} />}
                 {showRequests && <PaymentRequestsList user={user} />}
@@ -197,7 +195,6 @@ export default function Dashboard({ user }: DashboardProps) {
             <Divider sx={{ my: 3 }} />
 
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
-                {/* כרטיס הפקדה */}
                 <ActionCard title="הפקדה">
                     <Stack spacing={2} sx={{ flexGrow: 1, justifyContent: "space-between" }}>
                         <TextField
@@ -219,7 +216,6 @@ export default function Dashboard({ user }: DashboardProps) {
                     </Stack>
                 </ActionCard>
 
-                {/* כרטיס משיכה */}
                 <ActionCard title="משיכה">
                     <Stack spacing={2} sx={{ flexGrow: 1, justifyContent: "space-between" }}>
                         <TextField
@@ -241,7 +237,6 @@ export default function Dashboard({ user }: DashboardProps) {
                     </Stack>
                 </ActionCard>
 
-                {/* כרטיס העברה */}
                 <ActionCard title="העברה">
                     <Stack spacing={2} sx={{ flexGrow: 1, justifyContent: "space-between" }}>
                         <TextField
@@ -278,7 +273,6 @@ export default function Dashboard({ user }: DashboardProps) {
                     </Stack>
                 </ActionCard>
 
-                {/* כרטיס בקשת תשלום */}
                 <ActionCard title="בקשת תשלום">
                     <Stack spacing={2} sx={{ flexGrow: 1, justifyContent: "space-between" }}>
                         <TextField

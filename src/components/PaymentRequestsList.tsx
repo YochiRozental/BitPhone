@@ -25,7 +25,6 @@ export default function PaymentRequestsList({ user }: PaymentRequestsListProps) 
     setIsLoading(true);
     setMessage(null);
     try {
-      // כאן אנחנו משתמשים בפונקציה שאתה כבר כתבת:
       const data = await api.getPaymentRequests(user);
       setRequests(data);
       if (data.length === 0) {
@@ -45,7 +44,6 @@ export default function PaymentRequestsList({ user }: PaymentRequestsListProps) 
         text: approve ? "הבקשה אושרה בהצלחה ✅" : "הבקשה סורבה ❌",
         type: "success",
       });
-      // נעדכן את הרשימה אחרי פעולה
       setRequests((prev) => prev.filter((r) => r.id !== reqId));
     } catch (error: any) {
       setMessage({ text: error.message || "שגיאה בטיפול בבקשה.", type: "error" });
