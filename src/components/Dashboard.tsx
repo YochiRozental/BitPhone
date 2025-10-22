@@ -9,7 +9,6 @@ import {
     Stack,
     CircularProgress,
     Divider,
-    Alert,
 } from "@mui/material";
 import * as api from "../api/apiService";
 import type { User } from "../types";
@@ -34,10 +33,11 @@ function ActionCard({ title, children }: ActionCardProps) {
                 minWidth: "300px",
                 display: "flex",
                 flexDirection: "column",
+                boxShadow: 3,
             }}
         >
             <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h6" gutterBottom color="primary">
                     {title}
                 </Typography>
                 {children}
@@ -55,9 +55,10 @@ export default function Dashboard({ user }: DashboardProps) {
     const [withdrawAmount, setWithdrawAmount] = useState("");
     const [transferDetails, setTransferDetails] = useState({ recipient: "", amount: "" });
     const [paymentRequest, setPaymentRequest] = useState({ phone: "", amount: "" });
-    const [requestDetails, setRequestDetails] = useState({ recipient: "", amount: "" });
     const [showRequests, setShowRequests] = useState(false);
     const [showBalance, setShowBalance] = useState(false);
+    const [balance, setBalance] = useState<number | null>(null);
+
 
     const handleApiCall = async (apiFunc: () => Promise<any>) => {
         setMessage(null);
@@ -65,6 +66,9 @@ export default function Dashboard({ user }: DashboardProps) {
         try {
             const res = await apiFunc();
             setMessage({ text: res.message || JSON.stringify(res), type: "success" });
+            if (showBalance) {
+                await api.checkBalance(user).then(res => setBalance(Number(res.balance) || 0));
+            }
             return true;
         } catch (error: any) {
             setMessage({ text: error.message || "An unexpected error occurred.", type: "error" });
@@ -74,13 +78,23 @@ export default function Dashboard({ user }: DashboardProps) {
         }
     };
 
-    const handleCheckBalance = () => {
-        setShowBalance(!showBalance);
-        console.log(showBalance);
-        if (showBalance) {
-            handleApiCall(() => api.checkBalance(user));
+    const handleCheckBalance = async () => {
+        const newShowBalance = !showBalance;
+        setShowBalance(newShowBalance);
+
+        if (newShowBalance) {
+            setBalance(null);
+            const success = await handleApiCall(async () => {
+                const res = await api.checkBalance(user);
+                console.log("Balance response:", res);
+                setBalance(Number(res.balance) || 0);
+                return res;
+            });
+
+            if (!success) setBalance(null);
         }
     };
+
 
     const handleDeposit = async () => {
         const success = await handleApiCall(() => api.depositFunds(user, +depositAmount));
@@ -106,16 +120,9 @@ export default function Dashboard({ user }: DashboardProps) {
         if (success) setPaymentRequest({ phone: "", amount: "" });
     };
 
-    const handleRequestPayment = async () => {
-        const success = await handleApiCall(() =>
-            api.requestPayment(user, requestDetails.recipient, +requestDetails.amount)
-        );
-        if (success) setRequestDetails({ recipient: "", amount: "" });
-    };
-
 
     return (
-        <Box sx={{ p: 3, direction: "rtl" }}>
+        <Box sx={{ p: 3, direction: "rtl", maxWidth: "1200px", margin: "0 auto" }}>
             <Stack
                 direction={{ xs: "column", sm: "row" }}
                 justifyContent="space-between"
@@ -123,10 +130,14 @@ export default function Dashboard({ user }: DashboardProps) {
                 spacing={2}
                 sx={{ mb: 3 }}
             >
+                <Typography variant="h4" component="h1" color="primary">
+                    לוח בקרה
+                </Typography>
                 <Stack direction="row" spacing={2} justifyContent="center">
                     <Button
                         variant="outlined"
                         onClick={() => setShowHistory(!showHistory)}
+                        disabled={isLoading && !showHistory}
                     >
                         {showHistory ? "הסתר היסטוריה" : "הצג היסטוריה"}
                     </Button>
@@ -135,6 +146,7 @@ export default function Dashboard({ user }: DashboardProps) {
                         variant="outlined"
                         color="secondary"
                         onClick={() => setShowRequests(!showRequests)}
+                        disabled={isLoading && !showRequests}
                     >
                         {showRequests ? "הסתר בקשות תשלום" : "הצג בקשות תשלום"}
                     </Button>
@@ -152,47 +164,68 @@ export default function Dashboard({ user }: DashboardProps) {
             </Stack>
 
             <Stack spacing={3} my={3}>
-                {message && <Alert severity={message.type}>{message.text}</Alert>}
+                
                 {isLoading && (
                     <Box display="flex" justifyContent="center">
                         <CircularProgress />
                     </Box>
                 )}
+
+                {/* הצגת היתרה המעוצבת - נשארת */}
+                {showBalance && balance !== null && (
+                    <Card sx={{
+                        p: 3,
+                        textAlign: "center",
+                        backgroundColor: "primary.light",
+                        color: "primary.contrastText",
+                        boxShadow: 5
+                    }}>
+                        <Typography variant="h5" component="div">
+                            היתרה הנוכחית שלך 💰
+                        </Typography>
+                        <Typography variant="h3" sx={{ fontWeight: 'bold', mt: 1 }}>
+                            {balance.toLocaleString()} ₪
+                        </Typography>
+                    </Card>
+                )}
+                {/* סוף הצגת היתרה המעוצבת */}
+
                 {showHistory && <TransactionHistory user={user} />}
                 {showRequests && <PaymentRequestsList user={user} />}
-                {showBalance}
-
             </Stack>
 
             <Divider sx={{ my: 3 }} />
 
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+                {/* כרטיס הפקדה */}
                 <ActionCard title="הפקדה">
                     <Stack spacing={2} sx={{ flexGrow: 1, justifyContent: "space-between" }}>
                         <TextField
                             fullWidth
                             type="number"
-                            label="סכום"
+                            label="סכום להפקדה"
                             value={depositAmount}
                             onChange={(e) => setDepositAmount(e.target.value)}
                         />
                         <Button
                             fullWidth
                             variant="contained"
+                            color="primary"
                             onClick={handleDeposit}
-                            disabled={isLoading || !depositAmount}
+                            disabled={isLoading || !depositAmount || +depositAmount <= 0}
                         >
                             הפקד
                         </Button>
                     </Stack>
                 </ActionCard>
 
+                {/* כרטיס משיכה */}
                 <ActionCard title="משיכה">
                     <Stack spacing={2} sx={{ flexGrow: 1, justifyContent: "space-between" }}>
                         <TextField
                             fullWidth
                             type="number"
-                            label="סכום"
+                            label="סכום למשיכה"
                             value={withdrawAmount}
                             onChange={(e) => setWithdrawAmount(e.target.value)}
                         />
@@ -201,13 +234,14 @@ export default function Dashboard({ user }: DashboardProps) {
                             variant="contained"
                             color="secondary"
                             onClick={handleWithdraw}
-                            disabled={isLoading || !withdrawAmount}
+                            disabled={isLoading || !withdrawAmount || +withdrawAmount <= 0}
                         >
                             משוך
                         </Button>
                     </Stack>
                 </ActionCard>
 
+                {/* כרטיס העברה */}
                 <ActionCard title="העברה">
                     <Stack spacing={2} sx={{ flexGrow: 1, justifyContent: "space-between" }}>
                         <TextField
@@ -235,7 +269,8 @@ export default function Dashboard({ user }: DashboardProps) {
                             disabled={
                                 isLoading ||
                                 !transferDetails.recipient ||
-                                !transferDetails.amount
+                                !transferDetails.amount ||
+                                +transferDetails.amount <= 0
                             }
                         >
                             העבר
@@ -243,6 +278,7 @@ export default function Dashboard({ user }: DashboardProps) {
                     </Stack>
                 </ActionCard>
 
+                {/* כרטיס בקשת תשלום */}
                 <ActionCard title="בקשת תשלום">
                     <Stack spacing={2} sx={{ flexGrow: 1, justifyContent: "space-between" }}>
                         <TextField
@@ -268,7 +304,10 @@ export default function Dashboard({ user }: DashboardProps) {
                             color="warning"
                             onClick={handlePaymentRequest}
                             disabled={
-                                isLoading || !paymentRequest.phone || !paymentRequest.amount
+                                isLoading ||
+                                !paymentRequest.phone ||
+                                !paymentRequest.amount ||
+                                +paymentRequest.amount <= 0
                             }
                         >
                             בקש תשלום

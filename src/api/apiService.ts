@@ -23,7 +23,7 @@ export const openAccount = (phone: string, idNum: string, secret: string, name: 
 export const authenticateUser = (phone: string, idNum: string, secret: string) =>
     makeWebApiRequest({ action: "authenticate", phone_number: phone, id_number: idNum, secret_code: secret });
 
-export const checkBalance = (user: User) =>
+export const checkBalance = (user: User): Promise<ApiResponse<{ balance: number }>> =>
     makeWebApiRequest({ action: "check_balance", phone_number: user.phone, id_number: user.idNum, secret_code: user.secret });
 
 export const depositFunds = (user: User, amount: number) =>
