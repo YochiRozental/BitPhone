@@ -15,8 +15,8 @@ import {
   ButtonBase,
 } from "@mui/material";
 import { motion } from "framer-motion";
-import * as api from "../api/apiService";
-import type { User, ApiResponse } from "../types";
+import * as api from "../../api/apiService";
+import type { User, ApiResponse } from "../../types";
 
 type PaymentRequest = {
   id: number;

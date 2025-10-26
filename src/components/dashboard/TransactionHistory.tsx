@@ -10,8 +10,8 @@ import {
     Box,
     CircularProgress,
 } from "@mui/material";
-import * as api from "../api/apiService";
-import type { User, Transaction, ApiResponse } from "../types";
+import * as api from "../../api/apiService";
+import type { User, Transaction, ApiResponse } from "../../types";
 
 export default function TransactionHistory({ user }: { user: User }) {
     const [history, setHistory] = useState<Transaction[]>([]);
