@@ -18,20 +18,17 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    TextField,
 } from "@mui/material";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { motion } from "framer-motion";
 import { DatePicker } from "@mui/x-date-pickers";
-import dayjs, { Dayjs } from "dayjs"; // יש לוודא ש-dayjs מותקן
+import { Dayjs } from "dayjs";
 
 import * as api from "../../api/apiService";
 import type { User, Transaction, ApiResponse } from "../../types";
 
-// הגדרת טיפוס למסנן המעודכן
 type DateFilter = "all" | "week" | "month" | "three_months" | "custom";
 
-// הגדרת קומפוננטת TransactionHistory
 export default function TransactionHistory({ user }: { user: User }) {
     const [history, setHistory] = useState<Transaction[]>([]);
     const [filter, setFilter] = useState<DateFilter>("all");
@@ -39,12 +36,10 @@ export default function TransactionHistory({ user }: { user: User }) {
     const [loading, setLoading] = useState(true);
     const theme = useTheme();
 
-    // מצבי סטייט חדשים לבחירת תאריכים מותאמת אישית
     const [isCustomDialogOpen, setIsCustomDialogOpen] = useState(false);
     const [customStartDate, setCustomStartDate] = useState<Dayjs | null>(null);
     const [customEndDate, setCustomEndDate] = useState<Dayjs | null>(null);
 
-    // פונקציה לשינוי המסנן
     const handleFilterChange = (newFilter: DateFilter) => {
         setFilter(newFilter);
         if (newFilter !== "custom") {
@@ -53,7 +48,6 @@ export default function TransactionHistory({ user }: { user: User }) {
         }
     };
 
-    // פונקציה להחלת טווח תאריכים מותאם אישית
     const handleApplyCustomFilter = () => {
         if (customStartDate && customEndDate) {
             handleFilterChange("custom");
@@ -63,7 +57,6 @@ export default function TransactionHistory({ user }: { user: User }) {
         }
     };
 
-    // ... useEffect נשאר זהה ...
     useEffect(() => {
         const fetchHistory = async () => {
             setLoading(true);
@@ -102,22 +95,18 @@ export default function TransactionHistory({ user }: { user: User }) {
         };
         fetchHistory();
     }, [user.phone, user.idNum, user.secret]);
-    // ... סוף useEffect ...
 
 
-    // לוגיקת הסינון בפועל באמצעות useMemo - מעודכן עם "custom"
     const filteredHistory = useMemo(() => {
         if (filter === "all") {
             return history;
         }
 
         let startDate: Date;
-        let endDate: Date = new Date(); // כברירת מחדל עד היום
+        let endDate: Date = new Date();
 
         if (filter === "custom" && customStartDate && customEndDate) {
-            // עבור סינון מותאם אישית, נוודא שהשעה היא 00:00:00 ו-23:59:59
             startDate = customStartDate.startOf('day').toDate();
-            // End date should be end of day to include transactions from that day
             endDate = customEndDate.endOf('day').toDate();
         } else {
             const now = new Date();
@@ -136,23 +125,20 @@ export default function TransactionHistory({ user }: { user: User }) {
             }
         }
 
-        // נדאג שהתאריכים יהיו תאריכים חוקיים
         if (isNaN(startDate.getTime())) return history;
         if (filter === "custom" && isNaN(endDate.getTime())) return history;
 
         return history.filter(tx => {
             const txDate = new Date(tx.transaction_date);
 
-            // תנאי הסינון
             const isAfterStart = txDate >= startDate;
-            const isBeforeEnd = filter === "custom" ? txDate <= endDate : true; // אם לא custom, אין הגבלת סוף טווח
+            const isBeforeEnd = filter === "custom" ? txDate <= endDate : true;
 
             return isAfterStart && isBeforeEnd;
         });
 
     }, [history, filter, customStartDate, customEndDate]);
 
-    // פונקציות עזר קיימות
     const formatDateTime = (dateStr: string) => {
         return new Date(dateStr).toLocaleString("he-IL", {
             day: "2-digit",
@@ -185,7 +171,6 @@ export default function TransactionHistory({ user }: { user: User }) {
         return { label: "אחר", color: "info" };
     };
 
-    // מצבי טעינה ושגיאה נשארים זהים...
     if (loading)
         return (
             <Box display="flex" justifyContent="center" my={6}>
@@ -200,7 +185,6 @@ export default function TransactionHistory({ user }: { user: User }) {
             </Typography>
         );
 
-    // אם אין נתונים לאחר טעינה ראשונית
     if (!history.length)
         return (
             <Box p={3} sx={{ backgroundColor: theme.palette.background.paper, borderRadius: 2 }}>
@@ -213,7 +197,6 @@ export default function TransactionHistory({ user }: { user: User }) {
     return (
         <Box sx={{ direction: "rtl" }}>
 
-            {/* רכיבי הסינון - מעודכן עם כפתור מותאם אישית */}
             <Box
                 sx={{
                     display: "flex",
@@ -267,7 +250,6 @@ export default function TransactionHistory({ user }: { user: User }) {
                     );
                 })}
 
-                {/* כפתור סינון מותאם אישית */}
                 <ButtonBase
                     onClick={() => setIsCustomDialogOpen(true)}
                     component={motion.div}
@@ -300,7 +282,6 @@ export default function TransactionHistory({ user }: { user: User }) {
                 </ButtonBase>
             </Box>
 
-            {/* הטבלה עצמה */}
             <Paper
                 sx={{
                     overflow: "hidden",
@@ -410,7 +391,7 @@ export default function TransactionHistory({ user }: { user: User }) {
                                     InputLabelProps: { shrink: true },
                                     sx: {
                                         '.MuiInputBase-root': { direction: 'ltr' },
-                                        '& .MuiInputLabel-root': { right: 'initial', left: 14 } // תיקון מיקום הלייבל
+                                        '& .MuiInputLabel-root': { right: 'initial', left: 14 }
                                     }
                                 }
                             }}

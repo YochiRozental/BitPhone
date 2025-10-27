@@ -30,7 +30,6 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // התחברות
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -44,12 +43,10 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       })
-      // הרשמה
       .addCase(registerUser.fulfilled, (state, action: PayloadAction<User>) => {
         state.user = action.payload;
         localStorage.setItem("user", JSON.stringify(action.payload));
       })
-      // בדיקת יתרה
       .addCase(fetchBalance.fulfilled, (state, action) => {
         state.balance = action.payload || null;
       });

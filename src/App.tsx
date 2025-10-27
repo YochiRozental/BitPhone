@@ -14,6 +14,7 @@ import AuthForm from "./components/auth/AuthForm";
 import DashboardPage from "./pages/DashboardPage";
 import HistoryPage from "./pages/HistoryPage";
 import RequestsPage from "./pages/RequestsPage";
+import BalancePage from "./pages/BalancePage";
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -32,6 +33,7 @@ export default function App() {
           <Router>
             <Routes>
               <Route path="/" element={<DashboardPage user={user} onLogout={handleLogout} />} />
+              <Route path="/balance" element={<BalancePage user={user} onLogout={handleLogout} />} />
               <Route path="/history" element={<HistoryPage user={user} onLogout={handleLogout} />} />
               <Route path="/requests" element={<RequestsPage user={user} onLogout={handleLogout} />} />
             </Routes>

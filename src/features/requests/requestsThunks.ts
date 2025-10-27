@@ -2,18 +2,15 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import * as api from "../../api/apiService";
 import type { User } from "../../types";
 
-// בקשות נכנסות
 export const getIncomingRequests = createAsyncThunk(
     "requests/getIncomingRequests",
     async (user: User, { rejectWithValue }) => {
         const res = await api.getPaymentRequests(user);
         if (!res.success) return rejectWithValue(res.message);
-        // נתמכים גם res.requests וגם res.data
         return res.requests || res.data || [];
     }
 );
 
-// יצירת בקשת תשלום חדשה
 export const createPaymentRequest = createAsyncThunk(
     "requests/createPaymentRequest",
     async (
@@ -26,7 +23,6 @@ export const createPaymentRequest = createAsyncThunk(
     }
 );
 
-// תגובה לבקשת תשלום
 export const respondToPaymentRequest = createAsyncThunk(
     "requests/respondToPaymentRequest",
     async (

@@ -6,7 +6,7 @@ import type { User } from "../types";
 
 const DRAWER_WIDTH = 280;
 
-export default function ActionsDashboardPage({ user, onLogout }: { user: User; onLogout: () => void }) {
+export default function ActionsPage({ user, onLogout }: { user: User; onLogout: () => void }) {
     const [isLoading, setIsLoading] = useState(false);
     const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: "success" | "error" | "info" }>({
         open: false,
@@ -18,10 +18,12 @@ export default function ActionsDashboardPage({ user, onLogout }: { user: User; o
         setIsLoading(true);
         try {
             const res = await apiFunc();
-            if (res.success) {
-                setSnackbar({ open: true, message: "הפעולה בוצעה בהצלחה!", severity: "success" });
+
+            if (res && res.success) {
+                setSnackbar({ open: true, message: "הפעולה בוצעה בהצלחה! היתרה תתעדכן בקרוב.", severity: "success" });
             } else {
-                setSnackbar({ open: true, message: res.message || "שגיאה בביצוע הפעולה.", severity: "error" });
+
+                setSnackbar({ open: true, message: res?.message || "שגיאה בביצוע הפעולה.", severity: "error" });
             }
         } catch (err) {
             console.error(err);
@@ -34,7 +36,6 @@ export default function ActionsDashboardPage({ user, onLogout }: { user: User; o
     const handleCloseSnackbar = () => {
         setSnackbar({ ...snackbar, open: false });
     };
-
 
     return (
         <Box sx={{ display: "flex", minHeight: "100vh", direction: "rtl" }}>
@@ -50,7 +51,7 @@ export default function ActionsDashboardPage({ user, onLogout }: { user: User; o
                 }}
             >
                 <Typography variant="h4" color="primary" sx={{ mb: 4 }}>
-                    פעולות בחשבון
+                    פעולות בחשבון 🛠️
                 </Typography>
 
                 <ActionsSection
@@ -61,11 +62,15 @@ export default function ActionsDashboardPage({ user, onLogout }: { user: User; o
 
                 <Snackbar
                     open={snackbar.open}
-                    autoHideDuration={6000}
+                    autoHideDuration={5000}
                     onClose={handleCloseSnackbar}
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 >
-                    <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+                    <Alert
+                        onClose={handleCloseSnackbar}
+                        severity={snackbar.severity}
+                        sx={{ width: '100%' }}
+                    >
                         {snackbar.message}
                     </Alert>
                 </Snackbar>

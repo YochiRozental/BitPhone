@@ -2,9 +2,10 @@ import {
     Drawer, List, ListItemButton, ListItemText, ListItemIcon, Box,
     Typography, Divider, IconButton, useTheme, useMediaQuery
 } from "@mui/material";
-import { Menu, AccountBalanceWallet, History, Payment, Logout } from "@mui/icons-material";
+import { Menu, AccountBalanceWallet, History, Payment, Logout, SettingsSuggest } from "@mui/icons-material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
 const DRAWER_WIDTH = 280;
 
@@ -15,7 +16,13 @@ export default function Sidebar({ onLogout }: { onLogout: () => void }) {
     const navigate = useNavigate();
 
     const menuItems = [
-        { key: "balance", label: "יתרה נוכחית", icon: <AccountBalanceWallet />, path: "/" },
+        {
+            key: "actions",
+            label: "פעולות בחשבון",
+            icon: <SettingsSuggest />,
+            path: "/"
+        },
+        { key: "balance", label: "יתרה נוכחית", icon: <AccountBalanceWallet />, path: "/balance" },
         { key: "history", label: "היסטוריית פעולות", icon: <History />, path: "/history" },
         { key: "requests", label: "בקשות תשלום", icon: <Payment />, path: "/requests" },
     ];
@@ -24,12 +31,22 @@ export default function Sidebar({ onLogout }: { onLogout: () => void }) {
 
     const drawerContent = (
         <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-            <Box textAlign="center" pt={4} pb={2}>
-                <Typography variant="h5" color={theme.palette.primary.main} fontWeight={700}>
-                    הארנק הדיגיטלי
-                </Typography>
-                <Typography variant="caption" color="text.secondary">ניהול חשבון</Typography>
-                <Divider sx={{ mt: 2, mx: 3 }} />
+            <Box
+                component={RouterLink}
+                to="/"
+                sx={{
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    display: 'block',
+                }}
+            >
+                <Box textAlign="center" pt={4} pb={2}>
+                    <Typography variant="h5" color={theme.palette.primary.main} fontWeight={700}>
+                        Koaher Pay
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">ניהול חשבון</Typography>
+                    <Divider sx={{ mt: 2, mx: 3 }} />
+                </Box>
             </Box>
 
             <List sx={{ direction: "rtl", flexGrow: 1, px: 2, py: 1 }}>
@@ -37,7 +54,15 @@ export default function Sidebar({ onLogout }: { onLogout: () => void }) {
                     <ListItemButton
                         key={item.key}
                         onClick={() => { navigate(item.path); if (isMobile) setMobileOpen(false); }}
-                        sx={{ mb: 1, borderRadius: 2 }}
+                        sx={{
+                            mb: 1,
+                            borderRadius: 2,
+                            ...(location.pathname === item.path && {
+                                bgcolor: theme.palette.action.selected,
+                                '& .MuiListItemIcon-root': { color: theme.palette.primary.main },
+                                fontWeight: 'bold'
+                            })
+                        }}
                     >
                         <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
                         <ListItemText primary={item.label} />

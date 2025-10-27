@@ -2,7 +2,6 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import * as api from "../../api/apiService";
 import type { User } from "../../types";
 
-// התחברות משתמש קיים
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (userData: Pick<User, "phone" | "idNum" | "secret">, { rejectWithValue }) => {
@@ -12,7 +11,6 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// פתיחת חשבון חדש
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (userData: User, { rejectWithValue }) => {
@@ -22,7 +20,6 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-// בדיקת יתרה
 export const fetchBalance = createAsyncThunk(
   "auth/fetchBalance",
   async (user: User, { rejectWithValue }) => {

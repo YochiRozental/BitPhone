@@ -2,7 +2,6 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import * as api from "../../api/apiService";
 import type { User } from "../../types";
 
-// קריאת כל הטרנזקציות
 export const fetchTransactions = createAsyncThunk(
     "transactions/fetchTransactions",
     async (user: User, { rejectWithValue }) => {
@@ -12,14 +11,12 @@ export const fetchTransactions = createAsyncThunk(
     }
 );
 
-// הוספת טרנזקציה חדשה (למשל בהפקדה או תשלום)
 export const createTransaction = createAsyncThunk(
     "transactions/createTransaction",
     async (
         { user, amount, type, toPhone }: { user: User; amount: number; type: string; toPhone?: string },
         { rejectWithValue }
     ) => {
-        // פעולת טרנזקציה (למשל הפקדה/משיכה/העברה)
         let res;
 
         if (type === "deposit") {
