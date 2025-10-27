@@ -5,6 +5,10 @@ import { useAppSelector, useAppDispatch } from "./app/hooks";
 import { logout, setUser } from "./features/auth/authSlice";
 import { fetchBalance } from "./features/auth/authThunks";
 
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import 'dayjs/locale/he';
+
 import theme from "./theme/theme";
 import AuthForm from "./components/auth/AuthForm";
 import DashboardPage from "./pages/DashboardPage";
@@ -23,17 +27,19 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      {user ? (
-        <Router>
-          <Routes>
-            <Route path="/" element={<DashboardPage user={user} onLogout={handleLogout} />} />
-            <Route path="/history" element={<HistoryPage user={user} onLogout={handleLogout} />} />
-            <Route path="/requests" element={<RequestsPage user={user} onLogout={handleLogout} />} />
-          </Routes>
-        </Router>
-      ) : (
-        <AuthForm onLoginSuccess={(loggedInUser) => dispatch(setUser(loggedInUser))} />
-      )}
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="he">
+        {user ? (
+          <Router>
+            <Routes>
+              <Route path="/" element={<DashboardPage user={user} onLogout={handleLogout} />} />
+              <Route path="/history" element={<HistoryPage user={user} onLogout={handleLogout} />} />
+              <Route path="/requests" element={<RequestsPage user={user} onLogout={handleLogout} />} />
+            </Routes>
+          </Router>
+        ) : (
+          <AuthForm onLoginSuccess={(loggedInUser) => dispatch(setUser(loggedInUser))} />
+        )}
+      </LocalizationProvider>
     </ThemeProvider>
   );
 }
