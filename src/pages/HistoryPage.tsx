@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
-import TransactionHistory from "../dashboard/TransactionHistory";
-import type { User } from "../../types";
-import Sidebar from "../layout/Sidebar";
+import TransactionHistory from "../components/dashboard/TransactionHistory";
+import type { User } from "../types/index";
+import Sidebar from "../components/layout/Sidebar";
 
 export default function HistoryPage({ user, onLogout }: { user: User; onLogout: () => void }) {
   return (

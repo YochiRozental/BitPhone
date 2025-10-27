@@ -7,7 +7,7 @@ import {
     useTheme,
     CssBaseline,
 } from "@mui/material";
-import Sidebar from "./components/layout/Sidebar";
+import Sidebar from "./Sidebar";
 
 const DRAWER_WIDTH = 280;
 

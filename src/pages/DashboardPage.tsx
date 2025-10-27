@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Box, Typography, CircularProgress, Card } from "@mui/material";
-import * as api from "../../api/apiService";
-import type { User } from "../../types";
-import Sidebar from "../layout/Sidebar";
+import * as api from "../api/apiService";
+import type { User } from "../types";
+import Sidebar from "../components/layout/Sidebar";
 
 const DRAWER_WIDTH = 280;
 

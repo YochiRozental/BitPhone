@@ -10,6 +10,9 @@ export interface ApiResponse<T = any> {
     message: string;
     data?: T;
     balance?: string;
+    request?: any;
+    requests?: any[];
+    history?: any[];
 }
 
 export interface Transaction {

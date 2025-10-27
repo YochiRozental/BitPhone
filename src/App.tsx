@@ -1,25 +1,25 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import theme from "./theme";
+import { useAppSelector, useAppDispatch } from "./app/hooks";
+import { logout, setUser } from "./features/auth/authSlice";
+import { fetchBalance } from "./features/auth/authThunks";
+
+import theme from "./theme/theme";
 import AuthForm from "./components/auth/AuthForm";
-import DashboardPage from "./components/pages/DashboardPage";
-import HistoryPage from "./components/pages/HistoryPage";
-import RequestsPage from "./components/pages/RequestsPage";
-import type { User } from "./types";
+import DashboardPage from "./pages/DashboardPage";
+import HistoryPage from "./pages/HistoryPage";
+import RequestsPage from "./pages/RequestsPage";
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
-  }, []);
+    if (user) dispatch(fetchBalance(user));
+  }, [user, dispatch]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
-  };
+  const handleLogout = () => dispatch(logout());
 
   return (
     <ThemeProvider theme={theme}>
@@ -32,7 +32,7 @@ export default function App() {
           </Routes>
         </Router>
       ) : (
-        <AuthForm onLoginSuccess={setUser} />
+        <AuthForm onLoginSuccess={(loggedInUser) => dispatch(setUser(loggedInUser))} />
       )}
     </ThemeProvider>
   );

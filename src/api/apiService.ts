@@ -7,7 +7,7 @@ const apiClient = axios.create({
     baseURL: API_BASE_URL,
 });
 
-const makeWebApiRequest = async (params: Record<string, any>): Promise<ApiResponse> => {
+const makeWebApiRequest = async (params: Record<string, any>): Promise<ApiResponse<any>> => {
     try {
         const response = await apiClient.get("/api/web", { params });
         return response.data;
@@ -86,3 +86,19 @@ export const rejectPayment = (user: User, requestId: number): Promise<ApiRespons
         request_id: requestId,
     });
 
+export const getTransactions = (user: User): Promise<ApiResponse<{ data: any[] }>> =>
+    makeWebApiRequest({
+        action: "get_transactions",
+        phone_number: user.phone,
+        id_number: user.idNum,
+        secret_code: user.secret,
+    });
+
+export const respondToPaymentRequest = (user: User, requestId: number, accept: boolean) =>
+    makeWebApiRequest({
+        action: accept ? "approve_payment" : "reject_payment",
+        phone_number: user.phone,
+        id_number: user.idNum,
+        secret_code: user.secret,
+        request_id: requestId,
+    });
