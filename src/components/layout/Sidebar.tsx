@@ -62,7 +62,7 @@ export default function Sidebar({ onLogout }: { onLogout: () => void }) {
                     aria-label="open drawer"
                     edge="start"
                     onClick={handleDrawerToggle}
-                    sx={{ position: 'fixed', top: 16, right: 16, zIndex: theme.zIndex.drawer + 1 }}
+                    sx={{ position: 'fixed', top: 16, left: 16, zIndex: theme.zIndex.drawer + 1 }}
                 >
                     <Menu />
                 </IconButton>
@@ -72,7 +72,7 @@ export default function Sidebar({ onLogout }: { onLogout: () => void }) {
                 variant={isMobile ? "temporary" : "permanent"}
                 open={isMobile ? mobileOpen : true}
                 onClose={handleDrawerToggle}
-                anchor="left"
+                anchor="right"
                 sx={{
                     width: DRAWER_WIDTH,
                     flexShrink: 0,
@@ -81,11 +81,11 @@ export default function Sidebar({ onLogout }: { onLogout: () => void }) {
                         boxSizing: "border-box",
                         background: theme.palette.mode === 'light' ? "#f9f9f9" : theme.palette.background.default,
                         boxShadow: theme.shadows[8],
-                        borderRight: `1px solid ${theme.palette.divider}`,
+                        borderLeft: `1px solid ${theme.palette.divider}`,
+                        borderRight: 'none',
                     },
                 }}
             >
-
                 {drawerContent}
             </Drawer>
         </>

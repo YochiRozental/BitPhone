@@ -148,10 +148,10 @@ export default function PaymentRequests({ user }: { user: User }) {
         }}
       >
         {[
-          { key: "rejected", label: "נדחו", color: "#d32f2f" },
-          { key: "approved", label: "מאושרים", color: "#2e7d32" },
-          { key: "pending", label: "ממתינים", color: "#f9a825" },
           { key: "all", label: "הצג הכל", color: "#1976d2" },
+          { key: "pending", label: "ממתינים", color: "#f9a825" },
+          { key: "approved", label: "מאושרים", color: "#2e7d32" },
+          { key: "rejected", label: "נדחו", color: "#d32f2f" },
         ].map(({ key, label, color }) => {
           const count = counts[key as keyof typeof counts];
           const showCount = key === "pending" && count > 0;
@@ -211,22 +211,23 @@ export default function PaymentRequests({ user }: { user: User }) {
         <TableHead>
           <TableRow sx={{ backgroundColor: "#e3f2fd" }}>
             <TableCell align="center" sx={{ fontWeight: "bold" }}>
-              פעולות
-            </TableCell>
-            <TableCell align="center" sx={{ fontWeight: "bold" }}>
-              סכום מבוקש
-            </TableCell>
-            <TableCell align="center" sx={{ fontWeight: "bold" }}>
-              טלפון מבקש
-            </TableCell>
-            <TableCell align="center" sx={{ fontWeight: "bold" }}>
-              שם מבקש
+              סטטוס
             </TableCell>
             <TableCell align="center" sx={{ fontWeight: "bold" }}>
               תאריך בקשה
             </TableCell>
             <TableCell align="center" sx={{ fontWeight: "bold" }}>
-              סטטוס
+              שם מבקש
+            </TableCell>
+            <TableCell align="center" sx={{ fontWeight: "bold" }}>
+              טלפון מבקש
+            </TableCell>
+            <TableCell align="center" sx={{ fontWeight: "bold" }}>
+              סכום מבוקש
+            </TableCell>
+
+            <TableCell align="center" sx={{ fontWeight: "bold" }}>
+              פעולות
             </TableCell>
           </TableRow>
         </TableHead>
@@ -234,6 +235,32 @@ export default function PaymentRequests({ user }: { user: User }) {
         <TableBody>
           {filteredRequests.map((req) => (
             <TableRow key={req.id}>
+              <TableCell align="center">
+                <Chip
+                  label={
+                    req.status === "pending"
+                      ? "ממתין"
+                      : req.status === "approved"
+                        ? "אושר"
+                        : "נדחה"
+                  }
+                  color={
+                    req.status === "pending"
+                      ? "warning"
+                      : req.status === "approved"
+                        ? "success"
+                        : "error"
+                  }
+                  variant="outlined"
+                  size="small"
+                />
+              </TableCell>
+              <TableCell align="center">{formatDate(req.transaction_date)}</TableCell>
+              <TableCell align="center">{req.requester_name || "לא צוין שם"}</TableCell>
+              <TableCell align="center">{req.requester_phone}</TableCell>
+              <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                ₪ {req.amount}
+              </TableCell>
               <TableCell align="center">
                 {req.status === "pending" ? (
                   <Stack
@@ -299,32 +326,6 @@ export default function PaymentRequests({ user }: { user: User }) {
                     אין פעולות זמינות
                   </Typography>
                 )}
-              </TableCell>
-              <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                ₪ {req.amount}
-              </TableCell>
-              <TableCell align="center">{req.requester_phone}</TableCell>
-              <TableCell align="center">{req.requester_name || "לא צוין שם"}</TableCell>
-              <TableCell align="center">{formatDate(req.transaction_date)}</TableCell>
-              <TableCell align="center">
-                <Chip
-                  label={
-                    req.status === "pending"
-                      ? "ממתין"
-                      : req.status === "approved"
-                        ? "אושר"
-                        : "נדחה"
-                  }
-                  color={
-                    req.status === "pending"
-                      ? "warning"
-                      : req.status === "approved"
-                        ? "success"
-                        : "error"
-                  }
-                  variant="outlined"
-                  size="small"
-                />
               </TableCell>
             </TableRow>
           ))}

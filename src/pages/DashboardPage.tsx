@@ -53,7 +53,7 @@ export default function DashboardPage({ user, onLogout }: { user: User; onLogout
                         }}
                     >
                         <Typography variant="h5">היתרה הנוכחית שלך 💰</Typography>
-                        <Typography variant="h3">₪ {balance.toLocaleString()}</Typography>
+                        <Typography variant="h3">{balance.toLocaleString()} ₪</Typography>
                     </Card>
                 )}
             </Box>

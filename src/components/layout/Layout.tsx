@@ -29,7 +29,7 @@ export default function Layout({
     const theme = useTheme();
 
     return (
-        <Box sx={{ display: "flex", direction: "rtl", minHeight: "100vh", margin: 100 }}>
+        <Box sx={{ display: "flex", minHeight: "100vh" }}>
             <CssBaseline />
 
             <Sidebar onLogout={onLogout!} />
@@ -40,13 +40,13 @@ export default function Layout({
                     display: "flex",
                     flexDirection: "column",
                     width: { xs: "100%", md: `calc(100% - ${DRAWER_WIDTH}px)` },
-                    marginRight: { xs: 0, md: `${DRAWER_WIDTH}px` },
+                    marginLeft: { xs: 0, md: `${DRAWER_WIDTH}px` },
                     backgroundColor: theme.palette.background.default,
                     minHeight: "100vh",
                 }}
             >
                 <AppBar position="fixed" color="primary" elevation={3}
-                    sx={{ right: { md: `${DRAWER_WIDTH}px` }, width: { md: `calc(100% - ${DRAWER_WIDTH}px)` } }}
+                    sx={{ left: { md: `${DRAWER_WIDTH}px` }, width: { md: `calc(100% - ${DRAWER_WIDTH}px)` } }}
                 >
                     <Toolbar sx={{ justifyContent: "space-between" }}>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
