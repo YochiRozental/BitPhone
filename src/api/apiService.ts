@@ -102,3 +102,11 @@ export const respondToPaymentRequest = (user: User, requestId: number, accept: b
         secret_code: user.secret,
         request_id: requestId,
     });
+
+export const getSentPaymentRequests = (user: User): Promise<ApiResponse<{ sentRequests: any[] }>> =>
+    makeWebApiRequest({
+        action: "get_sent_payment_requests",
+        phone_number: user.phone,
+        id_number: user.idNum,
+        secret_code: user.secret,
+    });

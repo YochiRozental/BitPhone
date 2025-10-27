@@ -2,7 +2,7 @@ import {
     Drawer, List, ListItemButton, ListItemText, ListItemIcon, Box,
     Typography, Divider, IconButton, useTheme, useMediaQuery
 } from "@mui/material";
-import { Menu, AccountBalanceWallet, History, Payment, Logout, SettingsSuggest } from "@mui/icons-material";
+import { Menu, AccountBalanceWallet, History, Payment, Logout, SettingsSuggest, Send } from "@mui/icons-material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link as RouterLink } from "react-router-dom";
@@ -25,6 +25,7 @@ export default function Sidebar({ onLogout }: { onLogout: () => void }) {
         { key: "balance", label: "יתרה נוכחית", icon: <AccountBalanceWallet />, path: "/balance" },
         { key: "history", label: "היסטוריית פעולות", icon: <History />, path: "/history" },
         { key: "requests", label: "בקשות תשלום", icon: <Payment />, path: "/requests" },
+        { key: "sentRequests", label: "בקשות ששלחתי", icon: <Send />, path: "/sent-requests" },
     ];
 
     const handleDrawerToggle = () => setMobileOpen(!mobileOpen);

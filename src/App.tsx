@@ -15,6 +15,7 @@ import DashboardPage from "./pages/DashboardPage";
 import HistoryPage from "./pages/HistoryPage";
 import RequestsPage from "./pages/RequestsPage";
 import BalancePage from "./pages/BalancePage";
+import SentRequestsPage from "./pages/SentRequestsPage";
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -36,6 +37,7 @@ export default function App() {
               <Route path="/balance" element={<BalancePage user={user} onLogout={handleLogout} />} />
               <Route path="/history" element={<HistoryPage user={user} onLogout={handleLogout} />} />
               <Route path="/requests" element={<RequestsPage user={user} onLogout={handleLogout} />} />
+              <Route path="/sent-requests" element={<SentRequestsPage user={user} onLogout={handleLogout} />} />
             </Routes>
           </Router>
         ) : (

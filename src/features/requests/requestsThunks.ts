@@ -7,7 +7,7 @@ export const getIncomingRequests = createAsyncThunk(
     async (user: User, { rejectWithValue }) => {
         const res = await api.getPaymentRequests(user);
         if (!res.success) return rejectWithValue(res.message);
-        return res.requests || res.data || [];
+        return (res.requests || []) as any[];
     }
 );
 
