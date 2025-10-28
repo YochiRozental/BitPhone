@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box, Typography, Alert, Snackbar } from "@mui/material";
 import Sidebar from "../components/layout/Sidebar";
-import ActionsSection from "../components/dashboard/ActionsSection";
+import ActionsSection from "../components/dashboard/AccountTansactions";
 import type { User } from "../types";
 
 const DRAWER_WIDTH = 280;
@@ -46,7 +46,6 @@ export default function ActionsPage({ user, onLogout }: { user: User; onLogout: 
                 sx={{
                     flexGrow: 1,
                     p: 3,
-                    ml: { xs: 0, md: `${DRAWER_WIDTH}px` },
                     boxSizing: "border-box",
                 }}
             >

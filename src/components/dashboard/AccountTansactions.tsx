@@ -18,7 +18,7 @@ interface ActionCardProps {
 
 function ActionCard({ title, children }: ActionCardProps) {
     return (
-        <Card sx={{ flex: "1 1 300px", minWidth: "300px", display: "flex", flexDirection: "column", boxShadow: 3 }}>
+        <Card sx={{ flex: "1 1 600px", minWidth: "300px", display: "flex", flexDirection: "column", justifyContent: "space-between", boxShadow: 3 }}>
             <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
                 <Typography variant="h6" gutterBottom color="primary">{title}</Typography>
                 {children}
@@ -40,7 +40,6 @@ export default function ActionsSection({ user, onApiCall, isLoading }: ActionsSe
     const [paymentRequest, setPaymentRequest] = useState({ phone: "", amount: "" });
 
     const handleApiCall = (action: 'deposit' | 'withdraw' | 'transfer' | 'request') => {
-        let apiFunc: () => Promise<any>;
         let amount: number;
 
         const apiPromise = import("../../api/apiService").then(api => {

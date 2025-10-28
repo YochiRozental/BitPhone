@@ -11,7 +11,7 @@ export interface ApiResponse<T = any> {
     data?: T;
     balance?: string;
     request?: any;
-    requests?: any[];
+    requests?: T[];
     history?: any[];
 }
 
@@ -20,4 +20,13 @@ export interface Transaction {
     amount: string;
     description: string;
     transaction_date: string;
+}
+
+export interface RequestItem {
+    id: number;
+    status: "pending" | "approved" | "rejected";
+    date: string;
+    name: string;
+    phone: string;
+    amount: string;
 }

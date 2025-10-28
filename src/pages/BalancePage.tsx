@@ -45,7 +45,6 @@ export default function BalancePage({ user, onLogout }: { user: User; onLogout: 
                 sx={{
                     flexGrow: 1,
                     p: 3,
-                    ml: { xs: 0, md: `${DRAWER_WIDTH}px` },
                     boxSizing: "border-box",
                 }}
             >

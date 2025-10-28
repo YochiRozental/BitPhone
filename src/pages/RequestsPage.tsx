@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import PaymentRequestsList from "../components/dashboard/PaymentRequestsList";
+import PaymentRequestsList from "../components/dashboard/PaymentRequests";
 import type { User } from "../types/index";
 import Sidebar from "../components/layout/Sidebar";
 
