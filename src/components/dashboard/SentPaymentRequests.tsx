@@ -1,71 +1,36 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
+    Box,
+    Typography,
+    CircularProgress,
+    Paper,
     Table,
     TableHead,
     TableRow,
     TableCell,
     TableBody,
-    Paper,
-    Typography,
-    Box,
-    CircularProgress,
     Chip,
     ButtonBase,
 } from "@mui/material";
 import { motion } from "framer-motion";
-import * as api from "../../api/apiService";
-import type { User, ApiResponse } from "../../types";
-
-type SentRequest = {
-    id: number;
-    amount: string;
-    recipient_phone: string;
-    recipient_name?: string;
-    status: string;
-    transaction_date?: string;
-};
+import { getSentPaymentRequests } from "../../features/requests/sentRequestsThunks";
+import type { User } from "../../types";
+import type { RootState, AppDispatch } from "../../app/store";
 
 export default function SentPaymentRequests({ user }: { user: User }) {
-    const [requests, setRequests] = useState<SentRequest[]>([]);
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+    const dispatch = useDispatch<AppDispatch>();
+    const { list: requests, loading, error } = useSelector(
+        (state: RootState) => state.sentRequests
+    );
 
     useEffect(() => {
-        fetchSentRequests();
-    }, [user.phone, user.idNum, user.secret]);
+        dispatch(getSentPaymentRequests(user));
+    }, [dispatch, user.phone, user.idNum, user.secret]);
 
-    const fetchSentRequests = async () => {
-        setLoading(true);
-        setError("");
-
-        try {
-            const res: ApiResponse<{ sentRequests: any[] }> = await api.getSentPaymentRequests(user);
-
-            const rawRequests = (res as any).sentRequests || res.data?.sentRequests || [];
-
-            if (res.success && Array.isArray(rawRequests)) {
-                const mappedRequests: SentRequest[] = rawRequests.map((r: any) => ({
-                    id: r.id ?? r.request_id ?? 0,
-                    amount: r.amount?.toString() ?? "0",
-                    recipient_phone: r.recipient_phone ?? r.phone ?? "",
-                    recipient_name: r.recipient_name ?? r.name ?? "",
-                    status: r.status ?? "pending",
-                    transaction_date: r.transaction_date ?? r.date ?? r.created_at ?? "",
-                }));
-
-                setRequests(mappedRequests);
-            } else {
-                setRequests([]);
-                setError("אין בקשות תשלום ששלחת.");
-            }
-        } catch (err) {
-            console.error("שגיאה בטעינת בקשות ששלחתי:", err);
-            setError("שגיאה בטעינת בקשות התשלום ששלחת.");
-        }
-
-        setLoading(false);
-    };
+    const [filter, setFilter] = useState<
+        "all" | "pending" | "approved" | "rejected"
+    >("all");
 
     const formatDate = (dateStr?: string) => {
         if (!dateStr) return "-";
@@ -108,6 +73,7 @@ export default function SentPaymentRequests({ user }: { user: User }) {
 
     return (
         <Paper sx={{ overflow: "hidden", direction: "rtl", p: 3 }}>
+
             <Box
                 sx={{
                     display: "flex",
@@ -115,7 +81,6 @@ export default function SentPaymentRequests({ user }: { user: User }) {
                     alignItems: "center",
                     gap: 2,
                     p: 2,
-                    borderRadius: 4,
                     mb: 3,
                     background: "linear-gradient(90deg, #f5f7fa 0%, #e3f2fd 100%)",
                     boxShadow: "inset 0 0 10px rgba(0,0,0,0.05)",
@@ -156,6 +121,8 @@ export default function SentPaymentRequests({ user }: { user: User }) {
                                     gap: 1,
                                 }}
                             >
+                                <span>{label}</span>
+
                                 {showCount && (
                                     <Box
                                         sx={{
@@ -172,7 +139,6 @@ export default function SentPaymentRequests({ user }: { user: User }) {
                                         {count}
                                     </Box>
                                 )}
-                                <span>{label}</span>
                             </Box>
                         </ButtonBase>
                     );
@@ -186,7 +152,7 @@ export default function SentPaymentRequests({ user }: { user: User }) {
                             סטטוס
                         </TableCell>
                         <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                            תאריך בקשה
+                            תאריך הבקשה
                         </TableCell>
                         <TableCell align="center" sx={{ fontWeight: "bold" }}>
                             שם מקבל
@@ -199,7 +165,6 @@ export default function SentPaymentRequests({ user }: { user: User }) {
                         </TableCell>
                     </TableRow>
                 </TableHead>
-
                 <TableBody>
                     {filteredRequests.map((req) => (
                         <TableRow key={req.id}>
@@ -223,11 +188,11 @@ export default function SentPaymentRequests({ user }: { user: User }) {
                                     size="small"
                                 />
                             </TableCell>
-                            <TableCell align="center">{formatDate(req.transaction_date)}</TableCell>
+                            <TableCell align="center">{formatDate(req.request_date)}</TableCell>
                             <TableCell align="center">{req.recipient_name || "לא צוין שם"}</TableCell>
                             <TableCell align="center">{req.recipient_phone}</TableCell>
                             <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                                ₪ {req.amount}
+                                {req.amount} ₪
                             </TableCell>
                         </TableRow>
                     ))}

@@ -4,8 +4,10 @@ import {
   createPaymentRequest,
   respondToPaymentRequest,
 } from "./requestsThunks";
+import type { ReactNode } from "react";
 
 interface PaymentRequest {
+  recipient_phone: ReactNode;
   id: number;
   fromName: string;
   toName: string;

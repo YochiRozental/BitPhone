@@ -182,6 +182,7 @@ export default function PaymentRequests({ user }: { user: User }) {
                   gap: 1,
                 }}
               >
+                <span>{label}</span>
 
                 {showCount && (
                   <Box
@@ -199,7 +200,6 @@ export default function PaymentRequests({ user }: { user: User }) {
                     {count}
                   </Box>
                 )}
-                <span>{label}</span>
               </Box>
             </ButtonBase>
           );

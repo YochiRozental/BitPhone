@@ -5,6 +5,8 @@ interface PaymentRequest {
   id: number;
   requester_phone: string;
   recipient_phone: string;
+  request_date: string;
+  recipient_name: string;
   amount: string;
   status?: string;
   date?: string;
