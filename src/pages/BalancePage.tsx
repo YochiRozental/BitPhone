@@ -10,8 +10,6 @@ import * as api from "../api/apiService";
 import type { User } from "../types";
 import Sidebar from "../components/layout/Sidebar";
 
-const DRAWER_WIDTH = 280;
-
 export default function BalancePage({ user, onLogout }: { user: User; onLogout: () => void }) {
     const [balance, setBalance] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
