@@ -1,5 +1,4 @@
 import { Box, Typography } from "@mui/material";
-import Sidebar from "../components/layout/Sidebar";
 import SentPaymentRequests from "../components/dashboard/SentPaymentRequests";
 import type { User } from "../types";
 
@@ -8,12 +7,11 @@ interface SentRequestsPageProps {
     onLogout: () => void;
 }
 
-export default function SentRequestsPage({ user, onLogout }: SentRequestsPageProps) {
+export default function SentRequestsPage({ user }: SentRequestsPageProps) {
 
     return (
 
         <Box sx={{ display: "flex", minHeight: "100vh", direction: "rtl" }}>
-            <Sidebar onLogout={onLogout} />
 
             <Box
                 component="main"

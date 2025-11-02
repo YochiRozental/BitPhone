@@ -29,7 +29,16 @@ export default function AdminUsersPage({ user }: { user: User }) {
                 const res: ApiResponse = await api.getAllUsers(user);
 
                 if (res.success && Array.isArray((res as any).users)) {
-                    setUsers((res as any).users);
+                    if (res.success && Array.isArray((res as any).users)) {
+                        const normalized = (res as any).users.map((u: any) => ({
+                            phone: u.phone_number,
+                            idNum: u.id_number,
+                            balance: u.balance,
+                            role: u.role,
+                            name: u.name,
+                        }));
+                        setUsers(normalized);
+                    }
                 } else {
                     setError(res.message || "שגיאה בטעינת המשתמשים.");
                 }
@@ -100,6 +109,7 @@ export default function AdminUsersPage({ user }: { user: User }) {
                             }}
                         >
                             <TableCell align="center">#</TableCell>
+                            <TableCell align="center">שם</TableCell>
                             <TableCell align="center">טלפון</TableCell>
                             <TableCell align="center">תעודת זהות</TableCell>
                             <TableCell align="center">יתרה</TableCell>
@@ -116,16 +126,17 @@ export default function AdminUsersPage({ user }: { user: User }) {
                                 }}
                             >
                                 <TableCell align="center">{i + 1}</TableCell>
+                                <TableCell align="center">{u.name}</TableCell>
                                 <TableCell align="center">{u.phone}</TableCell>
                                 <TableCell align="center">{u.idNum}</TableCell>
-                                {/* <TableCell align="center">{u.balance} ₪</TableCell>
+                                <TableCell align="center">{u.balance} ₪</TableCell>
                                 <TableCell align="center">
                                     <Chip
                                         label={u.role === "admin" ? "מנהל" : "משתמש"}
                                         color={u.role === "admin" ? "primary" : "default"}
                                         variant="outlined"
                                     />
-                                </TableCell> */}
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

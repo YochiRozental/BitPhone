@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { Box, Typography, Alert, Snackbar } from "@mui/material";
-import Sidebar from "../components/layout/Sidebar";
 import ActionsSection from "../components/dashboard/AccountTansactions";
 import type { User } from "../types";
 
-const DRAWER_WIDTH = 280;
-
-export default function ActionsDashboardPage({ user, onLogout }: { user: User; onLogout: () => void }) {
+export default function ActionsDashboardPage({ user }: { user: User; onLogout: () => void }) {
     const [isLoading, setIsLoading] = useState(false);
     const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: "success" | "error" | "info" }>({
         open: false,
@@ -38,7 +35,6 @@ export default function ActionsDashboardPage({ user, onLogout }: { user: User; o
 
     return (
         <Box sx={{ display: "flex", minHeight: "100vh", direction: "rtl" }}>
-            <Sidebar onLogout={onLogout} />
 
             <Box
                 component="main"

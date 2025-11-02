@@ -8,9 +8,8 @@ import {
 } from "@mui/material";
 import * as api from "../api/apiService";
 import type { User } from "../types";
-import Sidebar from "../components/layout/Sidebar";
 
-export default function BalancePage({ user, onLogout }: { user: User; onLogout: () => void }) {
+export default function BalancePage({ user }: { user: User; onLogout: () => void }) {
     const [balance, setBalance] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -36,7 +35,6 @@ export default function BalancePage({ user, onLogout }: { user: User; onLogout: 
 
     return (
         <Box sx={{ display: "flex", minHeight: "100vh", direction: "rtl" }}>
-            <Sidebar onLogout={onLogout} />
 
             <Box
                 component="main"

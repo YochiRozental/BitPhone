@@ -7,7 +7,6 @@ import {
     useTheme,
     CssBaseline,
 } from "@mui/material";
-import Sidebar from "./Sidebar";
 
 const DRAWER_WIDTH = 280;
 
@@ -24,15 +23,12 @@ export default function Layout({
     authButton,
     title,
     greeting,
-    onLogout,
 }: LayoutProps) {
     const theme = useTheme();
 
     return (
         <Box sx={{ display: "flex", minHeight: "100vh" }}>
             <CssBaseline />
-
-            <Sidebar onLogout={onLogout!} />
 
             <Box
                 sx={{

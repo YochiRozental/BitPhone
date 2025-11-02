@@ -131,14 +131,6 @@ export const respondToPaymentRequest = (user: User, requestId: number, accept: b
         request_id: requestId
     });
 
-export const getAllUsers = (user: User) =>
-    makeWebApiRequest({
-        action: "get_all_users",
-        phone_number: user.phone,
-        id_number: user.idNum,
-        secret_code: user.secret
-    });
-
 export const getTransactions = (user: User) =>
     makeWebApiRequest({
         action: "get_transactions",
@@ -146,3 +138,18 @@ export const getTransactions = (user: User) =>
         id_number: user.idNum,
         secret_code: user.secret
     });
+
+export const getAllUsers = async (user: User): Promise<ApiResponse<any>> => {
+    try {
+        const response = await apiClient.get("/api/admin/get_all_users", {
+            params: {
+                phone_number: user.phone,
+                secret_code: user.secret,
+            },
+        });
+        return response.data;
+    } catch (error: any) {
+        console.error("Admin API Error:", error.response || error.message);
+        return { success: false, message: "שגיאת תקשורת עם השרת." };
+    }
+};

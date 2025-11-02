@@ -3,6 +3,8 @@ export interface User {
     idNum: string;
     secret: string;
     name?: string;
+    balance?: string;
+    role?: "user" | "admin";
 }
 
 export interface ApiResponse<T = any> {

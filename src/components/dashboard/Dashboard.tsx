@@ -2,11 +2,10 @@ import { useState, useEffect } from "react";
 import { Box, Typography, CircularProgress, Card } from "@mui/material";
 import * as api from "../../api/apiService";
 import type { User } from "../../types";
-import Sidebar from "../layout/Sidebar";
 
 const DRAWER_WIDTH = 280;
 
-export default function Dashboard({ user, onLogout }: { user: User; onLogout: () => void }) {
+export default function Dashboard({ user }: { user: User; onLogout: () => void }) {
 
     const [balance, setBalance] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +22,6 @@ export default function Dashboard({ user, onLogout }: { user: User; onLogout: ()
 
     return (
         <Box sx={{ display: "flex", direction: "rtl", minHeight: "100vh", width: "100%" }}>
-            <Sidebar onLogout={onLogout} />
             <Box
                 sx={{
                     flexGrow: 1,
