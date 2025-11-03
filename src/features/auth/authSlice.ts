@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { User } from "../../types";
-import { loginUser, registerUser, fetchBalance } from "./authThunks";
+import { loginUser, registerUser, updateUser, fetchBalance } from "./authThunks";
 
 interface AuthState {
   user: User | null;
@@ -22,6 +22,7 @@ const authSlice = createSlice({
   reducers: {
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
+      localStorage.setItem("user", JSON.stringify(action.payload));
     },
     logout: (state) => {
       state.user = null;
@@ -45,10 +46,19 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action: PayloadAction<User>) => {
         state.user = action.payload;
+        state.loading = false;
+        state.error = null;
         localStorage.setItem("user", JSON.stringify(action.payload));
       })
       .addCase(fetchBalance.fulfilled, (state, action) => {
         state.balance = action.payload || null;
+      })
+      .addCase(updateUser.fulfilled, (state, action: PayloadAction<User>) => {
+        state.user = action.payload;
+        localStorage.setItem("user", JSON.stringify(action.payload));
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.error = action.payload as string;
       });
   },
 });

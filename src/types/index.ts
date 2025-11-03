@@ -1,10 +1,18 @@
+export interface BankAccount {
+    accountNumber: string;
+    bankNumber: string;
+    branchNumber: string;
+    accountOwner: string;
+}
+
 export interface User {
     phone: string;
     idNum: string;
     secret: string;
-    name?: string;
-    balance?: string;
-    role?: "user" | "admin";
+    name: string;
+    bankAccount: BankAccount;
+    balance: string;
+    role: "user" | "admin";
 }
 
 export interface ApiResponse<T = any> {

@@ -17,13 +17,24 @@ const makeWebApiRequest = async (params: Record<string, any>): Promise<ApiRespon
     }
 };
 
-export const openAccount = (phone: string, idNum: string, secret: string, name: string) =>
+export const openAccount = (
+    phone: string,
+    idNum: string,
+    secret: string,
+    name: string,
+    bankNumber: string,
+    branchNumber: string,
+    accountNumber: string
+) =>
     makeWebApiRequest({
         action: "open_account",
         phone_number: phone,
         id_number: idNum,
         secret_code: secret,
-        name
+        name,
+        bank_number: bankNumber,
+        branch_number: branchNumber,
+        account_number: accountNumber,
     });
 
 export const authenticateUser = (phone: string, idNum: string, secret: string) =>
@@ -33,6 +44,13 @@ export const authenticateUser = (phone: string, idNum: string, secret: string) =
         id_number: idNum,
         secret_code: secret
     });
+
+export async function updateUser(user: User) {
+    return makeWebApiRequest({
+        action: "update_user",
+        ...user,
+    });
+}
 
 export const checkBalance = (user: User) =>
     makeWebApiRequest({

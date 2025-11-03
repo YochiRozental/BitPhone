@@ -9,7 +9,7 @@ interface AuthFormProps {
 
 export default function AuthForm({ onLoginSuccess }: AuthFormProps) {
     const [isLoginView, setIsLoginView] = useState(true);
-    const [form, setForm] = useState({ phone: "", idNum: "", secret: "", name: "" });
+    const [form, setForm] = useState({ phone: "", idNum: "", secret: "", name: "", bankNumber: "", branchNumber: "", accountNumber: "" });
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +31,9 @@ export default function AuthForm({ onLoginSuccess }: AuthFormProps) {
                 idNum: form.idNum,
                 secret: form.secret,
                 name: res.data?.name || "",
+                bankAccount: { "accountNumber": "", "bankNumber": "", "branchNumber": "", "accountOwner": "" },
+                balance: "",
+                role: "user"
             };
 
             localStorage.setItem("user", JSON.stringify(loggedUser));
@@ -48,7 +51,7 @@ export default function AuthForm({ onLoginSuccess }: AuthFormProps) {
         setError("");
         setMessage("");
 
-        const res = await api.openAccount(form.phone, form.idNum, form.secret, form.name);
+        const res = await api.openAccount(form.phone, form.idNum, form.secret, form.name, form.bankNumber, form.branchNumber, form.accountNumber);
         if (res.success) {
             setMessage("נרשמת בהצלחה! אפשר להתחבר עכשיו.");
             setIsLoginView(true);

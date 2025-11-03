@@ -12,6 +12,7 @@ import {
     useTheme,
     useMediaQuery,
 } from "@mui/material";
+
 import {
     Menu,
     AccountBalanceWallet,
@@ -22,6 +23,7 @@ import {
     Send,
     AdminPanelSettings,
     People,
+    PersonOutline,
 } from "@mui/icons-material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -58,10 +60,16 @@ export default function Sidebar({ onLogout }: { onLogout: () => void }) {
 
     const baseMenu: MenuEntry[] = [
         {
+            key: "profile",
+            label: "פרופיל",
+            icon: <PersonOutline />,
+            path: "/profile",
+        },
+        {
             key: "actions",
             label: "פעולות בחשבון",
             icon: <SettingsSuggest />,
-            path: "/",
+            path: "/account-actions",
         },
         {
             key: "balance",
