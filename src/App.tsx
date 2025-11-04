@@ -21,6 +21,7 @@ import AdminUsersPage from "./components/admin/AdminUsersPage";
 import RegisterPage from "./pages/users/RegisterPage";
 import LoginPage from "./pages/users/LoginPage";
 import ProfilePage from "./pages/users/ProfilePage";
+import EditProfilePage from "./pages/users/EditProfilePage";
 
 export default function App() {
   const dispatch = useAppDispatch();
@@ -55,7 +56,11 @@ export default function App() {
                 user ? (
                   <MainLayout onLogout={handleLogout}>
                     <Routes>
-                      <Route path="/" element={<Navigate to="/account-actions" replace />} />
+                      <Route path="/" element={<Navigate to="/profile" replace />} />
+                      <Route path="/register" element={<RegisterPage />} />
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/profile" element={<ProfilePage />} />
+                      <Route path="/edit" element={<EditProfilePage />} />
                       <Route path="/profile" element={<ProfilePage />} />
                       <Route
                         path="/account-actions"
@@ -85,7 +90,7 @@ export default function App() {
                     </Routes>
                   </MainLayout>
                 ) : (
-                  <Navigate to="/register" replace />
+                  <Navigate to="/login" replace />
                 )
               }
             />

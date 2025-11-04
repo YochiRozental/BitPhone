@@ -23,7 +23,7 @@ export default function AuthForm({ onLoginSuccess }: AuthFormProps) {
         setIsLoading(true);
         setError("");
 
-        const res = await api.authenticateUser(form.phone, form.idNum, form.secret);
+        const res = await api.loginUser(form.phone, form.idNum, form.secret);
 
         if (res.success) {
             const loggedUser: User = {

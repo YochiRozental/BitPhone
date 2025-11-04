@@ -1,15 +1,7 @@
 import type { User } from "../types";
 import { makeWebApiRequest } from "./clientApi";
 
-export const openAccount = (
-    phone: string,
-    idNum: string,
-    secret: string,
-    name: string,
-    bankNumber: string,
-    branchNumber: string,
-    accountNumber: string
-) =>
+export const openAccount = (phone: string, idNum: string, secret: string, name: string, bankNumber: string, branchNumber: string, accountNumber: string) =>
     makeWebApiRequest({
         action: "open_account",
         phone_number: phone,
@@ -21,7 +13,7 @@ export const openAccount = (
         account_number: accountNumber,
     });
 
-export const authenticateUser = (phone: string, idNum: string, secret: string) =>
+export const loginUser = (phone: string, idNum: string, secret: string) =>
     makeWebApiRequest({
         action: "authenticate",
         phone_number: phone,

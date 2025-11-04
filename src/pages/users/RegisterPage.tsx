@@ -17,5 +17,9 @@ export default function RegisterPage() {
         }
     };
 
-    return <UserForm mode="register" onSubmit={handleRegister} />;
+    const handleGoToLogin = () => {
+        navigate("/login");
+    };
+
+    return <UserForm mode="register" onSubmit={handleRegister} onGoToLogin={handleGoToLogin} />;
 }

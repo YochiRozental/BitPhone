@@ -5,21 +5,25 @@ import type { User } from "../../types";
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (userData: Pick<User, "phone" | "idNum" | "secret">, { rejectWithValue }) => {
-    const res = await api.authenticateUser(userData.phone, userData.idNum, userData.secret);
+    const res = await api.loginUser(userData.phone, userData.idNum, userData.secret);
+
     if (!res.success) return rejectWithValue(res.message);
+
+    const serverUser = res.data;
+
     const user: User = {
       phone: userData.phone,
       idNum: userData.idNum,
       secret: userData.secret,
-      name: res.data?.name || "",
+      name: serverUser.name || "",
       bankAccount: {
-        accountNumber: res.data?.accountNumber || "",
-        bankNumber: res.data?.bankNumber || "",
-        branchNumber: res.data?.branchNumber || "",
-        accountOwner: res.data?.accountOwner || res.data?.name || "",
+        accountNumber: serverUser.account_number || "",
+        bankNumber: serverUser.bank_number || "",
+        branchNumber: serverUser.branch_number || "",
+        accountOwner: serverUser.account_holder_name || serverUser.name || "",
       },
-      balance: res.data?.balance?.toString() || "0",
-      role: res.data?.role || "user",
+      balance: serverUser.balance?.toString() || "0",
+      role: serverUser.role || "user",
     };
 
     return user;

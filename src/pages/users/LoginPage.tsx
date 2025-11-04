@@ -25,7 +25,7 @@ export default function LoginPage() {
 
         try {
             const result = await dispatch(loginUser({ phone, idNum, secret })).unwrap();
-            if (result) {
+            if (result) {                
                 setProfileData(result);
                 setShowProfile(true);
             }
