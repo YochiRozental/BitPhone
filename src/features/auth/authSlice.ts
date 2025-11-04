@@ -1,17 +1,15 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { User } from "../../types";
-import { loginUser, registerUser, updateUser, fetchBalance } from "./authThunks";
+import { loginUser, registerUser, updateUser } from "./authThunks";
 
 interface AuthState {
   user: User | null;
-  balance: string | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: AuthState = {
   user: JSON.parse(localStorage.getItem("user") || "null"),
-  balance: null,
   loading: false,
   error: null,
 };
@@ -49,9 +47,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = null;
         localStorage.setItem("user", JSON.stringify(action.payload));
-      })
-      .addCase(fetchBalance.fulfilled, (state, action) => {
-        state.balance = action.payload || null;
       })
       .addCase(updateUser.fulfilled, (state, action: PayloadAction<User>) => {
         state.user = action.payload;

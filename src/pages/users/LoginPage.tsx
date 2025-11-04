@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { TextField, Button, Box, Typography, Paper, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useAppDispatch } from "../../app/hooks";
 import { loginUser } from "../../features/auth/authThunks";
 import UserForm from "../../components/dashboard/UserForm";
 
 export default function LoginPage() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const user = useAppSelector((state) => state.auth.user);
 
     const [phone, setPhone] = useState("");
     const [idNum, setIdNum] = useState("");

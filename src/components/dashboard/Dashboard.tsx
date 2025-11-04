@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Box, Typography, CircularProgress, Card } from "@mui/material";
-import * as api from "../../api/apiService";
+import * as userApi from "../../api/userApi";
+
 import type { User } from "../../types";
 
 const DRAWER_WIDTH = 280;
@@ -13,7 +14,7 @@ export default function Dashboard({ user }: { user: User; onLogout: () => void }
     useEffect(() => {
         const loadBalance = async () => {
             setIsLoading(true);
-            const res = await api.checkBalance(user);
+            const res = await userApi.checkBalance(user);
             setBalance(Number(res.balance) || 0);
             setIsLoading(false);
         };

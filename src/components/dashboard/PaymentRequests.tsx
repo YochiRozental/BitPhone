@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import * as api from "../../api/apiService";
+import * as paymentsApi from "../../api/paymentsApi";
+import * as userApi from "../../api/userApi";
 import PaymentRequestsTable from "./PaymentRequestsTable";
 import type { User, RequestItem } from "../../types";
 
@@ -14,7 +15,7 @@ export default function PaymentRequestsList({ user }: { user: User }) {
 
   const fetchRequests = async () => {
     setLoading(true);
-    const res = await api.getPaymentRequests(user);
+    const res = await userApi.getPaymentRequests(user);
     if (res.success && Array.isArray(res.requests)) {
       const formatted: RequestItem[] = res.requests.map((r: any) => ({
         id: r.id,
@@ -32,12 +33,12 @@ export default function PaymentRequestsList({ user }: { user: User }) {
   };
 
   const handleApprove = async (id: number) => {
-    await api.approvePayment(user, id);
+    await paymentsApi.approvePayment(user, id);
     fetchRequests();
   };
 
   const handleReject = async (id: number) => {
-    await api.rejectPayment(user, id);
+    await paymentsApi.rejectPayment(user, id);
     fetchRequests();
   };
 

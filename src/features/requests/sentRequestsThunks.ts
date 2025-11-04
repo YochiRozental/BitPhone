@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import * as api from "../../api/apiService";
+import * as api from "../../api/userApi";
 import type { User } from "../../types";
 
 export const getSentPaymentRequests = createAsyncThunk(

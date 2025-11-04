@@ -42,7 +42,7 @@ export default function ActionsSection({ user, onApiCall, isLoading }: ActionsSe
     const handleApiCall = (action: 'deposit' | 'withdraw' | 'transfer' | 'request') => {
         let amount: number;
 
-        const apiPromise = import("../../api/apiService").then(api => {
+        const apiPromise = import("../../api/paymentsApi").then(api => {
             switch (action) {
                 case 'deposit':
                     amount = +depositAmount;

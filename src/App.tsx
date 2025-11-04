@@ -7,7 +7,6 @@ import "dayjs/locale/he";
 
 import { useAppSelector, useAppDispatch } from "./app/hooks";
 import { logout } from "./features/auth/authSlice";
-import { fetchBalance } from "./features/auth/authThunks";
 
 import theme from "./theme/theme";
 import MainLayout from "./components/layout/MainLayout";
@@ -29,7 +28,6 @@ export default function App() {
 
   useEffect(() => {
     if (user) {
-      dispatch(fetchBalance(user));
     }
   }, [user, dispatch]);
 

@@ -24,7 +24,7 @@ import { motion } from "framer-motion";
 import { DatePicker } from "@mui/x-date-pickers";
 import { Dayjs } from "dayjs";
 
-import * as api from "../../api/apiService";
+import * as api from "../../api/userApi";
 import type { User, Transaction, ApiResponse } from "../../types";
 
 type DateFilter = "all" | "week" | "month" | "three_months" | "custom";

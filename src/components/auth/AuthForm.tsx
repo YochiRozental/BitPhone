@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TextField, Button, Box, Typography, Paper } from "@mui/material";
 import type { User } from "../../types";
-import * as api from "../../api/apiService";
+import * as api from "../../api/authApi";
 
 interface AuthFormProps {
     onLoginSuccess: (user: User) => void;

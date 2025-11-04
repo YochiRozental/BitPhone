@@ -6,7 +6,7 @@ import {
     Card,
     useTheme
 } from "@mui/material";
-import * as api from "../api/apiService";
+import * as api from "../api/userApi";
 import type { User } from "../types";
 
 export default function BalancePage({ user }: { user: User; onLogout: () => void }) {

@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 import type { User, ApiResponse } from "../../types";
-import * as api from "../../api/apiService";
+import * as api from "../../api/adminApi";
 
 export default function AdminUsersPage({ user }: { user: User }) {
     const [users, setUsers] = useState<User[]>([]);

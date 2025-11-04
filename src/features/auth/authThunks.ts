@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import * as api from "../../api/apiService";
+import * as api from "../../api/authApi";
 import type { User } from "../../types";
 
 export const loginUser = createAsyncThunk(
@@ -47,15 +47,6 @@ export const registerUser = createAsyncThunk(
 
     localStorage.setItem("user", JSON.stringify(savedUser));
     return savedUser;
-  }
-);
-
-export const fetchBalance = createAsyncThunk(
-  "auth/fetchBalance",
-  async (user: User, { rejectWithValue }) => {
-    const res = await api.checkBalance(user);
-    if (!res.success) return rejectWithValue(res.message);
-    return res.balance;
   }
 );
 
