@@ -63,7 +63,24 @@ export default function ActionsSection({ user, onApiCall, isLoading }: ActionsSe
 
         onApiCall(async () => {
             const finalApiFunc = await apiPromise;
-            return finalApiFunc();
+            const result = await finalApiFunc();
+
+            switch (action) {
+                case 'deposit':
+                    setDepositAmount("");
+                    break;
+                case 'withdraw':
+                    setWithdrawAmount("");
+                    break;
+                case 'transfer':
+                    setTransferDetails({ recipient: "", amount: "" });
+                    break;
+                case 'request':
+                    setPaymentRequest({ phone: "", amount: "" });
+                    break;
+            }
+
+            return result;
         });
     };
 
@@ -78,7 +95,7 @@ export default function ActionsSection({ user, onApiCall, isLoading }: ActionsSe
                         label="סכום להפקדה"
                         value={depositAmount}
                         onChange={(e) => setDepositAmount(e.target.value)}
-                        inputProps={{ min: "0" }}
+                        slotProps={{ input: { inputProps: { min: 0 } } }}
                     />
                     <Button
                         variant="contained"
@@ -97,7 +114,7 @@ export default function ActionsSection({ user, onApiCall, isLoading }: ActionsSe
                         label="סכום למשיכה"
                         value={withdrawAmount}
                         onChange={(e) => setWithdrawAmount(e.target.value)}
-                        inputProps={{ min: "0" }}
+                        slotProps={{ input: { inputProps: { min: 0 } } }}
                     />
                     <Button
                         variant="contained"
@@ -122,7 +139,7 @@ export default function ActionsSection({ user, onApiCall, isLoading }: ActionsSe
                         label="סכום"
                         value={transferDetails.amount}
                         onChange={(e) => setTransferDetails({ ...transferDetails, amount: e.target.value })}
-                        inputProps={{ min: "0" }}
+                        slotProps={{ input: { inputProps: { min: 0 } } }}
                     />
                     <Button
                         variant="contained"
@@ -147,7 +164,7 @@ export default function ActionsSection({ user, onApiCall, isLoading }: ActionsSe
                         label="סכום"
                         value={paymentRequest.amount}
                         onChange={(e) => setPaymentRequest({ ...paymentRequest, amount: e.target.value })}
-                        inputProps={{ min: "0" }}
+                        slotProps={{ input: { inputProps: { min: 0 } } }}
                     />
                     <Button
                         variant="contained"
