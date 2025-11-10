@@ -24,19 +24,26 @@ interface UserFormProps {
     mode: "register" | "profile" | "edit";
     initialData?: User;
     loading?: boolean;
+    isViewOnly?: boolean;
+
     onSubmit: (data: User) => void;
+    onEdit?: () => void;
     onCancel?: () => void;
     onGoToLogin?: () => void;
 }
 
 export default function UserForm({
-    mode,
+    mode = "profile",
     initialData,
     loading = false,
+    isViewOnly = false,
     onSubmit,
+    onEdit,
     onCancel,
     onGoToLogin,
+
 }: UserFormProps) {
+
     const [form, setForm] = useState<User>(
         initialData || {
             name: "",
@@ -60,21 +67,13 @@ export default function UserForm({
         }
     }, [initialData]);
 
-    const isViewOnly = mode === "profile";
-    const title =
-        mode === "register"
-            ? "פתיחת חשבון חדש"
-            : mode === "edit"
-                ? "עריכת פרטים"
-                : "הפרופיל שלי";
+    const title = mode === "register" ? "פתיחת חשבון חדש" : mode === "edit" ? "עריכת פרטים" : "הפרופיל שלי";
 
-    const registerSubtitle =
-        mode === "register"
-            ? "!הצטרפו עכשיו והתחילו לנהל את הכסף שלכם בקלות"
-            : null;
+    const registerSubtitle = mode === "register" ? "!הצטרפו עכשיו והתחילו לנהל את הכסף שלכם בקלות" : null;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        
         onSubmit(form);
     };
 
@@ -96,6 +95,19 @@ export default function UserForm({
             }));
         }
     };
+
+    const viewOnlyStyles = isViewOnly ? {
+        '& .MuiInputBase-input.Mui-disabled': {
+            WebkitTextFillColor: 'rgba(0, 0, 0, 0.87) !important',
+            opacity: 1,
+        },
+        '& .MuiInputAdornment-root .MuiSvgIcon-root': {
+            color: 'rgba(0, 0, 0, 0.54) !important',
+        },
+        '& .MuiInputLabel-root.Mui-disabled': {
+            color: 'rgba(0, 0, 0, 0.6) !important',
+        }
+    } : undefined;
 
     return (
         <Box
@@ -148,6 +160,7 @@ export default function UserForm({
                             fullWidth
                             required
                             disabled={isViewOnly}
+                            sx={{ ...viewOnlyStyles }}
                             variant="outlined"
                             InputProps={{
                                 startAdornment: (
@@ -165,6 +178,7 @@ export default function UserForm({
                             fullWidth
                             required
                             disabled={isViewOnly}
+                            sx={{ ...viewOnlyStyles }}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -181,6 +195,7 @@ export default function UserForm({
                             fullWidth
                             required
                             disabled={isViewOnly}
+                            sx={{ ...viewOnlyStyles }}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -198,6 +213,7 @@ export default function UserForm({
                             fullWidth
                             required
                             disabled={isViewOnly}
+                            sx={{ ...viewOnlyStyles }}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -212,13 +228,13 @@ export default function UserForm({
                         </Typography>
                         <Divider sx={{ mb: 1 }} />
 
-                        <Stack direction="row" spacing={2}>
+                        <Stack direction="row" justifyContent={"space-between"}>
                             <TextField
                                 label="מספר בנק"
                                 name="bankNumber"
                                 value={form.bankAccount.bankNumber}
                                 onChange={handleChange}
-                                fullWidth
+                                sx={{ width: '49%', ...viewOnlyStyles }}
                                 required
                                 disabled={isViewOnly}
                                 InputProps={{
@@ -234,7 +250,7 @@ export default function UserForm({
                                 name="branchNumber"
                                 value={form.bankAccount.branchNumber}
                                 onChange={handleChange}
-                                fullWidth
+                                sx={{ width: '49%', ...viewOnlyStyles }}
                                 required
                                 disabled={isViewOnly}
                                 InputProps={{
@@ -254,6 +270,7 @@ export default function UserForm({
                             onChange={handleChange}
                             fullWidth
                             required
+                            sx={{ ...viewOnlyStyles }}
                             disabled={isViewOnly}
                             InputProps={{
                                 startAdornment: (
@@ -271,6 +288,7 @@ export default function UserForm({
                             fullWidth
                             required
                             disabled={isViewOnly}
+                            sx={{ ...viewOnlyStyles }}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -285,8 +303,13 @@ export default function UserForm({
                     <Box display="flex" justifyContent="center" gap={3} mt={5}>
                         {isViewOnly ? (
                             <Button
+                                type="button"
                                 variant="contained"
-                                onClick={onCancel}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    if (onEdit) onEdit();
+                                }}
                                 color="primary"
                                 size="large"
                                 sx={{ px: 4, py: 1.5 }}

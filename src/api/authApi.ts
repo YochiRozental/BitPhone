@@ -24,5 +24,16 @@ export const loginUser = (phone: string, idNum: string, secret: string) =>
 export const updateUser = (user: User) =>
     makeWebApiRequest({
         action: "update_user",
-        ...user,
+
+        phone_number: user.phone,
+        id_number: user.idNum,
+        secret_code: user.secret,
+
+        name: user.name,
+        secret: user.secret,
+
+        bank_number: user.bankAccount.bankNumber,
+        branch_number: user.bankAccount.branchNumber,
+        account_number: user.bankAccount.accountNumber,
+        account_holder_name: user.bankAccount.accountOwner,
     });

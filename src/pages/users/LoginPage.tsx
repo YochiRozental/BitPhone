@@ -37,7 +37,6 @@ export default function LoginPage() {
     };
 
     const handleProfileUpdate = (updatedData: any) => {
-        console.log("שמירת פרופיל חדש:", updatedData);
         setProfileData(updatedData);
     };
 

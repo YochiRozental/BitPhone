@@ -13,6 +13,7 @@ export default function EditProfilePage() {
             mode="edit"
             initialData={user || undefined}
             onSubmit={(data) => dispatch(updateUser(data))}
+            onCancel={() => (window.location.href = "/profile")}
         />
     );
 }

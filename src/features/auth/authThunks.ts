@@ -56,16 +56,17 @@ export const registerUser = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
   "auth/updateUser",
-  async (updateData: Partial<User>, { getState, rejectWithValue }) => {
-    const state: any = getState();
-    const user = state.auth.user;
+  async (user: User, { rejectWithValue }) => {
+    try {
+      const res = await api.updateUser(user)
 
-    if (!user) return rejectWithValue("משתמש לא מחובר");
-
-    const res = await api.updateUser({ ...user, ...updateData });
-
-    if (!res.success) return rejectWithValue(res.message);
-
-    return { ...user, ...updateData };
+      return {
+        ...user,
+        ...res.data,
+      };
+    } catch (err: any) {
+      console.error("שגיאה ב-updateUser:", err);
+      return rejectWithValue(err.message);
+    }
   }
 );
