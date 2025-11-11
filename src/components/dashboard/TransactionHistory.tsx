@@ -409,7 +409,8 @@ export default function TransactionHistory({ user }: { user: User }) {
                         <TableBody>
                             {sortedAndFilteredHistory.map((tx, i) => {
                                 const { label: chipLabel, color: chipColor } = getActionType(tx.action_type);
-                                const isCredit = chipColor === "success";
+                                const isCredit = chipColor === "primary" || chipColor === "warning";
+
                                 const amount = isCredit ? `+ ${tx.amount}` : `- ${tx.amount}`;
                                 const color = isCredit ? theme.palette.success.dark : theme.palette.error.dark;
 
