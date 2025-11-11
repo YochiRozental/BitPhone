@@ -1,51 +1,31 @@
 import { useState } from "react";
-import { useAppSelector, useAppDispatch } from "../../app/hooks";
-import { updateUser } from "../../features/auth/authThunks";
+import UserForm from "../../components/dashboard/forms/UserForm";
 import { setUser } from "../../features/auth/authSlice";
-import UserForm from "../../components/dashboard/UserForm";
+import { updateUser } from "../../features/auth/authThunks";
 import type { User } from "../../types";
-import { CircularProgress, Box, Typography } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
-  const { user, loading } = useAppSelector((state) => state.auth);
-  const [isViewOnly, setIsViewOnly] = useState(true);
+  const { user, loading } = useAppSelector(s => s.auth);
+  const [readOnly, setRO] = useState(true);
 
-  if (!user) {
-    return (
-      <Box textAlign="center" mt={10}>
-        <Typography variant="h6">לא נמצאו נתוני משתמש</Typography>
-      </Box>
-    );
-  }
+  if (!user) return null;
 
-  const handleSave = async (data: User) => {
-    try {
-      const result = await dispatch(updateUser(data)).unwrap();
-      dispatch(setUser(result));
-      setIsViewOnly(true);
-    } catch (err) {
-      console.error("עדכון נכשל:", err);
-    }
+  const save = async (data: User) => {
+    const r = await dispatch(updateUser(data)).unwrap();
+    dispatch(setUser(r));
+    setRO(true);
   };
-
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" mt={10}>
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   return (
     <UserForm
-      mode="profile"
       initialData={user}
+      readOnly={readOnly}
       loading={loading}
-      isViewOnly={isViewOnly}
-      onEdit={() => setIsViewOnly(false)}
-      onCancel={() => setIsViewOnly(true)}
-      onSubmit={handleSave}
+      onEdit={() => setRO(false)}
+      onCancel={() => setRO(true)}
+      onSave={save}
     />
   );
 }

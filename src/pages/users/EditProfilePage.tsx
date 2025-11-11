@@ -1,19 +1,20 @@
-import { useDispatch, useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../../app/store";
-import UserForm from "../../components/dashboard/UserForm";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import UserForm from "../../components/dashboard/forms/UserForm";
 import { updateUser } from "../../features/auth/authThunks";
 
 export default function EditProfilePage() {
-    const dispatch = useDispatch<AppDispatch>();
+    const user = useAppSelector((s) => s.auth.user);
+    const dispatch = useAppDispatch();
 
-    const user = useSelector((state: RootState) => state.auth.user);
+    if (!user) return null;
 
     return (
         <UserForm
-            mode="edit"
-            initialData={user || undefined}
-            onSubmit={(data) => dispatch(updateUser(data))}
+            initialData={user}
+            readOnly={false}
+            onEdit={() => { }}
             onCancel={() => (window.location.href = "/profile")}
+            onSave={(d) => dispatch(updateUser(d))}
         />
     );
 }
