@@ -30,7 +30,7 @@ export default function FormFields({
     showBankFields = false,
 }: Props) {
 
-    const baseProps = (name: string, label: string, icon: any, extra: any = {}) => ({
+    const baseProps = (name: string, label: string, icon: any, extra: any = {}, autocomplete?: string) => ({
         label,
         name,
         value: data[name],
@@ -39,6 +39,9 @@ export default function FormFields({
         disabled: readOnly,
         error: !!errors[name],
         helperText: errors[name] || "",
+        inputProps: {
+            autocomplete: autocomplete || 'off',
+        },
         InputProps: {
             startAdornment: (
                 <InputAdornment position="start">
@@ -55,10 +58,10 @@ export default function FormFields({
             <Typography variant="h6">פרטים אישיים</Typography>
             <Divider />
 
-            <TextField {...baseProps("name", "שם מלא", <PersonIcon />)} />
-            <TextField {...baseProps("phone", "טלפון", <PhoneIcon />)} />
-            <TextField {...baseProps("idNum", "תעודת זהות", <BadgeIcon />)} />
-            <TextField {...baseProps("secret", "קוד סודי", <LockIcon />, { type: "password" })} />
+            <TextField {...baseProps("name", "שם מלא", <PersonIcon />, {}, "name")} />
+            <TextField {...baseProps("phone", "טלפון", <PhoneIcon />, {}, "tel-national")} />
+            <TextField {...baseProps("idNum", "תעודת זהות", <BadgeIcon />, {}, "tel-national")} />
+            <TextField {...baseProps("secret", "קוד סודי", <LockIcon />, { type: "password" }, "new-password")} />
 
             {showBankFields && (
                 <>
@@ -76,6 +79,7 @@ export default function FormFields({
                             disabled={readOnly}
                             error={!!errors.bankNumber}
                             helperText={errors.bankNumber}
+                            inputProps={{ autocomplete: 'off' }}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -93,6 +97,7 @@ export default function FormFields({
                             disabled={readOnly}
                             error={!!errors.branchNumber}
                             helperText={errors.branchNumber}
+                            inputProps={{ autocomplete: 'off' }}
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
@@ -113,6 +118,7 @@ export default function FormFields({
                         error={!!errors.accountNumber}
                         helperText={errors.accountNumber}
                         fullWidth
+                        inputProps={{ autocomplete: 'off' }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -132,6 +138,7 @@ export default function FormFields({
                         error={!!errors.accountOwner}
                         helperText={errors.accountOwner}
                         fullWidth
+                        inputProps={{ autocomplete: 'off' }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
