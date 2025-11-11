@@ -18,6 +18,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    TableSortLabel,
 } from "@mui/material";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { motion } from "framer-motion";
@@ -27,7 +28,12 @@ import { Dayjs } from "dayjs";
 import * as api from "../../api/userApi";
 import type { User, Transaction, ApiResponse } from "../../types";
 
+type ActionColor = 'primary' | 'secondary' | 'error' | 'success' | 'warning' | 'info';
 type DateFilter = "all" | "week" | "month" | "three_months" | "custom";
+type SortDirection = 'asc' | 'desc';
+type SortColumn = 'transaction_date' | 'amount' | 'action_type' | 'description' | '';
+
+type ActionDetails = { label: string; color: ActionColor; };
 
 export default function TransactionHistory({ user }: { user: User }) {
     const [history, setHistory] = useState<Transaction[]>([]);
@@ -39,6 +45,51 @@ export default function TransactionHistory({ user }: { user: User }) {
     const [isCustomDialogOpen, setIsCustomDialogOpen] = useState(false);
     const [customStartDate, setCustomStartDate] = useState<Dayjs | null>(null);
     const [customEndDate, setCustomEndDate] = useState<Dayjs | null>(null);
+
+    const [sortColumn, setSortColumn] = useState<SortColumn>('transaction_date');
+    const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+
+    const ACTION_RULES: { keywords: string[], details: ActionDetails }[] = [
+        {
+            keywords: ["deposit"],
+            details: { label: "הפקדה", color: "primary" }
+        },
+        {
+            keywords: ["withdraw"],
+            details: { label: "משיכה", color: "error" }
+        },
+        {
+            keywords: ["transfer"],
+            details: { label: "העברה", color: "success" }
+        },
+        {
+            keywords: ["received"],
+            details: { label: "קבלה", color: "warning" }
+        },
+        {
+            keywords: ["payment"],
+            details: { label: "תשלום", color: "error" }
+        },
+    ];
+
+    const DEFAULT_ACTION: ActionDetails = { label: "אחר", color: "info" };
+
+    const getActionType = (action: string): ActionDetails => {
+        const normalizedAction = action.toLowerCase();
+
+        const matchingRule = ACTION_RULES.find(rule =>
+            rule.keywords.some(keyword => normalizedAction.includes(keyword))
+        );
+
+        return matchingRule ? matchingRule.details : DEFAULT_ACTION;
+    };
+
+    const handleSort = (column: SortColumn) => {
+        setSortDirection(prevDirection =>
+            column === sortColumn && prevDirection === 'desc' ? 'asc' : 'desc'
+        );
+        setSortColumn(column);
+    };
 
     const handleFilterChange = (newFilter: DateFilter) => {
         setFilter(newFilter);
@@ -96,48 +147,82 @@ export default function TransactionHistory({ user }: { user: User }) {
         fetchHistory();
     }, [user.phone, user.idNum, user.secret]);
 
+    const sortedAndFilteredHistory = useMemo(() => {
+        let dataToSort = history;
+        if (filter !== "all") {
+            let startDate: Date;
+            let endDate: Date = new Date();
 
-    const filteredHistory = useMemo(() => {
-        if (filter === "all") {
-            return history;
+            if (filter === "custom" && customStartDate && customEndDate) {
+                startDate = customStartDate.startOf('day').toDate();
+                endDate = customEndDate.endOf('day').toDate();
+            } else {
+                const now = new Date();
+                switch (filter) {
+                    case "week":
+                        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+                        break;
+                    case "month":
+                        startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+                        break;
+                    case "three_months":
+                        startDate = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+                        break;
+                    default:
+                        startDate = new Date(0);
+                        break;
+                }
+            }
+            if (isNaN(startDate.getTime())) return history;
+
+            dataToSort = history.filter(tx => {
+                const txDate = new Date(tx.transaction_date);
+                const isAfterStart = txDate >= startDate;
+                const isBeforeEnd = filter === "custom" ? txDate <= endDate : true;
+                return isAfterStart && isBeforeEnd;
+            });
         }
 
-        let startDate: Date;
-        let endDate: Date = new Date();
+        if (!sortColumn) {
+            return dataToSort;
+        }
 
-        if (filter === "custom" && customStartDate && customEndDate) {
-            startDate = customStartDate.startOf('day').toDate();
-            endDate = customEndDate.endOf('day').toDate();
-        } else {
-            const now = new Date();
-            switch (filter) {
-                case "week":
-                    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+        const sortedData = [...dataToSort].sort((a, b) => {
+            let aValue: any;
+            let bValue: any;
+            let comparison = 0;
+
+            switch (sortColumn) {
+                case 'transaction_date':
+                    aValue = new Date(a.transaction_date).getTime();
+                    bValue = new Date(b.transaction_date).getTime();
+                    comparison = aValue - bValue;
                     break;
-                case "month":
-                    startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+                case 'amount':
+                    aValue = a.amount;
+                    bValue = b.amount;
+                    comparison = aValue - bValue;
                     break;
-                case "three_months":
-                    startDate = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+                case 'action_type':
+                    aValue = getActionType(a.action_type).label;
+                    bValue = getActionType(b.action_type).label;
+                    comparison = aValue.localeCompare(bValue, 'he', { sensitivity: 'base' });
+                    break;
+                case 'description':
+                    aValue = a.description;
+                    bValue = b.description;
+                    comparison = aValue.localeCompare(bValue, 'he', { sensitivity: 'base' });
                     break;
                 default:
-                    return history;
+                    return 0;
             }
-        }
 
-        if (isNaN(startDate.getTime())) return history;
-        if (filter === "custom" && isNaN(endDate.getTime())) return history;
-
-        return history.filter(tx => {
-            const txDate = new Date(tx.transaction_date);
-
-            const isAfterStart = txDate >= startDate;
-            const isBeforeEnd = filter === "custom" ? txDate <= endDate : true;
-
-            return isAfterStart && isBeforeEnd;
+            return sortDirection === 'asc' ? comparison : -comparison;
         });
 
-    }, [history, filter, customStartDate, customEndDate]);
+        return sortedData;
+
+    }, [history, filter, customStartDate, customEndDate, sortColumn, sortDirection]);
 
     const formatDateTime = (dateStr: string) => {
         return new Date(dateStr).toLocaleString("he-IL", {
@@ -156,19 +241,6 @@ export default function TransactionHistory({ user }: { user: User }) {
             return `${start} - ${end}`;
         }
         return "בחר תאריכים";
-    };
-
-    const getActionType = (action: string) => {
-        if (action.includes("deposit") || action.includes("received")) {
-            return { label: "הפקדה/קבלה", color: "success" };
-        }
-        if (action.includes("transfer") || action.includes("payment")) {
-            return { label: "העברה/תשלום", color: "error" };
-        }
-        if (action.includes("withdraw")) {
-            return { label: "משיכה", color: "error" };
-        }
-        return { label: "אחר", color: "info" };
     };
 
     if (loading)
@@ -289,7 +361,7 @@ export default function TransactionHistory({ user }: { user: User }) {
                     boxShadow: theme.shadows[3],
                 }}
             >
-                {filteredHistory.length === 0 && filter !== 'all' ? (
+                {sortedAndFilteredHistory.length === 0 && filter !== 'all' ? (
                     <Box p={3} textAlign="center">
                         <Typography color="text.secondary">
                             אין תנועות תואמות בטווח הזמן שנבחר.
@@ -304,14 +376,38 @@ export default function TransactionHistory({ user }: { user: User }) {
                                     '& th': { color: theme.palette.primary.dark, fontWeight: 'bold' }
                                 }}
                             >
-                                <TableCell align="center">תאריך</TableCell>
-                                <TableCell align="center">סוג פעולה</TableCell>
-                                <TableCell align="center">תיאור</TableCell>
-                                <TableCell align="center">סכום</TableCell>
+                                <SortableTableCell
+                                    columnKey="transaction_date"
+                                    currentSortColumn={sortColumn}
+                                    currentSortDirection={sortDirection}
+                                    handleSort={handleSort}
+                                    label="תאריך"
+                                />
+                                <SortableTableCell
+                                    columnKey="action_type"
+                                    currentSortColumn={sortColumn}
+                                    currentSortDirection={sortDirection}
+                                    handleSort={handleSort}
+                                    label="סוג פעולה"
+                                />
+                                <SortableTableCell
+                                    columnKey="description"
+                                    currentSortColumn={sortColumn}
+                                    currentSortDirection={sortDirection}
+                                    handleSort={handleSort}
+                                    label="תיאור"
+                                />
+                                <SortableTableCell
+                                    columnKey="amount"
+                                    currentSortColumn={sortColumn}
+                                    currentSortDirection={sortDirection}
+                                    handleSort={handleSort}
+                                    label="סכום"
+                                />
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {filteredHistory.map((tx, i) => {
+                            {sortedAndFilteredHistory.map((tx, i) => {
                                 const { label: chipLabel, color: chipColor } = getActionType(tx.action_type);
                                 const isCredit = chipColor === "success";
                                 const amount = isCredit ? `+ ${tx.amount}` : `- ${tx.amount}`;
@@ -416,3 +512,40 @@ export default function TransactionHistory({ user }: { user: User }) {
         </Box>
     );
 }
+
+interface SortableTableCellProps {
+    columnKey: SortColumn;
+    currentSortColumn: SortColumn;
+    currentSortDirection: SortDirection;
+    handleSort: (column: SortColumn) => void;
+    label: string;
+}
+
+const SortableTableCell: React.FC<SortableTableCellProps> = ({
+    columnKey,
+    currentSortColumn,
+    currentSortDirection,
+    handleSort,
+    label,
+}) => {
+    const isActive = currentSortColumn === columnKey;
+
+    return (
+        <TableCell
+            align="center"
+            onClick={() => handleSort(columnKey)}
+            sortDirection={isActive ? currentSortDirection : false}
+            sx={{
+                cursor: 'pointer',
+                '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' }
+            }}
+        >
+            <TableSortLabel
+                active={isActive}
+                direction={isActive ? currentSortDirection : 'desc'}
+            >
+                {label}
+            </TableSortLabel>
+        </TableCell>
+    );
+};
