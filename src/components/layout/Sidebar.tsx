@@ -56,7 +56,7 @@ export default function Sidebar({ onLogout }: { onLogout: () => void }) {
 
     const user = useSelector((state: any) => state.auth?.user);
 
-    const isAdmin = user?.phone === "089766670";
+    const isAdmin = user?.phone === "0556749022";
 
     const baseMenu: MenuEntry[] = [
         {
