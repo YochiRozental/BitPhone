@@ -1,5 +1,5 @@
 import { useState } from "react";
-import UserForm from "../../components/dashboard/forms/UserForm";
+import UserForm from "../../components/forms/UserForm";
 import { setUser } from "../../features/auth/authSlice";
 import { updateUser } from "../../features/auth/authThunks";
 import type { User } from "../../types";

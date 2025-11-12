@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../../app/hooks";
 import { registerUser } from "../../features/auth/authThunks";
-import AuthForm from "../../components/dashboard/forms/AuthForm";
+import AuthForm from "../../components/forms/AuthForm";
 
 export default function RegisterPage() {
     const dispatch = useAppDispatch();

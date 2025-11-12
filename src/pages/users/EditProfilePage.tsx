@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import UserForm from "../../components/dashboard/forms/UserForm";
+import UserForm from "../../components/forms/UserForm";
 import { updateUser } from "../../features/auth/authThunks";
 
 export default function EditProfilePage() {

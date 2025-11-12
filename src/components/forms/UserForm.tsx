@@ -7,8 +7,8 @@ import {
     Divider,
 } from "@mui/material";
 import FormFields from "../forms/FormFields";
-import { useUserForm } from "../../../hooks/useUserForm";
-import type { User } from "../../../types";
+import { useUserForm } from "../../hooks/useUserForm";
+import type { User } from "../../types";
 
 interface Props {
     initialData: User;

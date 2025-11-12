@@ -7,7 +7,7 @@ import {
     Divider,
 } from "@mui/material";
 import FormFields from "../forms/FormFields";
-import { useUserForm } from "../../../hooks/useUserForm";
+import { useUserForm } from "../../hooks/useUserForm";
 
 interface Props {
     mode: "login" | "register";
