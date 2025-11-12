@@ -23,7 +23,7 @@ export function filterAndSortTransactions<T extends Record<string, any>>(
 ): T[] {
     if (!Array.isArray(data)) return [];
 
-    // 1️⃣ סינון לפי תאריך
+    // סינון לפי תאריך
     let filtered = data;
 
     if (filter !== "all") {
@@ -62,7 +62,7 @@ export function filterAndSortTransactions<T extends Record<string, any>>(
         }
     }
 
-    // 2️⃣ מיון לפי עמודה
+    // מיון לפי עמודה
     const sorted = [...filtered].sort((a, b) => {
         const aValue = a[sortColumn];
         const bValue = b[sortColumn];
@@ -81,7 +81,7 @@ export function filterAndSortTransactions<T extends Record<string, any>>(
         return sortDirection === "asc" ? aTime - bTime : bTime - aTime;
     });
 
-    // 3️⃣ אפשרות לעיבוד נוסף (למשל צבעים לפעולות)
+    // אפשרות לעיבוד נוסף (למשל צבעים לפעולות)
     if (getActionType) {
         return sorted.map((item) => {
             const action = (item as any).action_type;

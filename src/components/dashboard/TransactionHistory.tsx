@@ -18,9 +18,9 @@ import type { User, Transaction } from "../../types";
 import { formatDateTime } from "../filters/utils/dateUtils";
 
 export default function TransactionHistory({ user }: { user: User }) {
-  
+
   const theme = useTheme();
-  
+
   const {
     sortedAndFiltered,
     history,
@@ -37,15 +37,6 @@ export default function TransactionHistory({ user }: { user: User }) {
     handleSort,
     getActionType,
   } = useTransactionFilter(user);
-
-  // const formatDateTime = (dateStr: string) =>
-  //   new Date(dateStr).toLocaleString("he-IL", {
-  //     day: "2-digit",
-  //     month: "2-digit",
-  //     year: "numeric",
-  //     hour: "2-digit",
-  //     minute: "2-digit",
-  //   });
 
   if (loading)
     return (

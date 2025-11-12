@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import * as paymentsApi from "../../api/paymentsApi";
 import * as userApi from "../../api/userApi";
-import PaymentRequestsTable from "./PaymentRequestsTable";
+import PaymentRequestsTable from "../tables/PaymentRequestsTable";
 import type { User, RequestItem } from "../../types";
 
 export default function PaymentRequestsList({ user }: { user: User }) {

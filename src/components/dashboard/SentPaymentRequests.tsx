@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getSentPaymentRequests } from "../../features/requests/sentRequestsThunks";
-import PaymentRequestsTable from "./PaymentRequestsTable";
+import PaymentRequestsTable from "../tables/PaymentRequestsTable";
 import type { User, RequestItem } from "../../types";
 import type { RootState, AppDispatch } from "../../app/store";
 
