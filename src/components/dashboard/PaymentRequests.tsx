@@ -1,46 +1,28 @@
-import { useEffect, useState } from "react";
-import * as paymentsApi from "../../api/paymentsApi";
-import * as userApi from "../../api/userApi";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchIncomingRequests,
+  respondToRequest,
+} from "../../features/requests/paymentRequestsThunks";
 import PaymentRequestsTable from "../tables/PaymentRequestsTable";
-import type { User, RequestItem } from "../../types";
+import type { User } from "../../types";
+import type { RootState, AppDispatch } from "../../app/store";
 
-export default function PaymentRequestsList({ user }: { user: User }) {
-  const [requests, setRequests] = useState<RequestItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+export default function PaymentRequests({ user }: { user: User }) {
+  const dispatch = useDispatch<AppDispatch>();
+  const { incoming: requests, loading, error } = useSelector(
+    (state: RootState) => state.requests
+  );
 
   useEffect(() => {
-    fetchRequests();
-  }, [user]);
+    dispatch(fetchIncomingRequests(user));
+  }, [dispatch, user]);
 
-  const fetchRequests = async () => {
-    setLoading(true);
-    const res = await userApi.getPaymentRequests(user);
-    if (res.success && Array.isArray(res.requests)) {
-      const formatted: RequestItem[] = res.requests.map((r: any) => ({
-        id: r.id,
-        status: (r.status as "pending" | "approved" | "rejected") || "pending",
-        date: r.transaction_date,
-        name: r.requester_name,
-        phone: r.requester_phone,
-        amount: r.amount,
-      }));
-      setRequests(formatted);
-    } else {
-      setError(res.message || "שגיאה");
-    }
-    setLoading(false);
-  };
+  const handleApprove = (id: number) =>
+    dispatch(respondToRequest({ user, requestId: id, accept: true }));
 
-  const handleApprove = async (id: number) => {
-    await paymentsApi.approvePayment(user, id);
-    fetchRequests();
-  };
-
-  const handleReject = async (id: number) => {
-    await paymentsApi.rejectPayment(user, id);
-    fetchRequests();
-  };
+  const handleReject = (id: number) =>
+    dispatch(respondToRequest({ user, requestId: id, accept: false }));
 
   return (
     <PaymentRequestsTable

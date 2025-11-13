@@ -1,34 +1,21 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getSentPaymentRequests } from "../../features/requests/sentRequestsThunks";
+import { fetchSentRequests } from "../../features/requests/paymentRequestsThunks";
 import PaymentRequestsTable from "../tables/PaymentRequestsTable";
-import type { User, RequestItem } from "../../types";
+import type { User } from "../../types";
 import type { RootState, AppDispatch } from "../../app/store";
 
 export default function SentPaymentRequests({ user }: { user: User }) {
   const dispatch = useDispatch<AppDispatch>();
-  const { list: requests, loading, error } = useSelector(
-    (state: RootState) => state.sentRequests
+  const { sent: requests, loading, error } = useSelector(
+    (state: RootState) => state.requests
   );
 
   useEffect(() => {
-    dispatch(getSentPaymentRequests(user));
+    dispatch(fetchSentRequests(user));
   }, [dispatch, user]);
 
-  const formatted: RequestItem[] = requests.map((r) => ({
-    id: r.id,
-    status: (r.status as "pending" | "approved" | "rejected") || "pending",
-    date: r.request_date,
-    name: r.recipient_name,
-    phone: r.recipient_phone,
-    amount: r.amount,
-  }));
-
   return (
-    <PaymentRequestsTable
-      requests={formatted}
-      loading={loading}
-      error={error}
-    />
+    <PaymentRequestsTable requests={requests} loading={loading} error={error} />
   );
 }
