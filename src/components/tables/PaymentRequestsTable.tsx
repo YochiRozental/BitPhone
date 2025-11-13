@@ -1,24 +1,20 @@
+import { useState, useMemo } from "react";
 import {
-    Paper,
     Box,
-    Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    Chip,
-    CircularProgress,
     Typography,
+    CircularProgress,
     ButtonBase,
     Stack,
+    Chip,
     Button,
+    useTheme,
 } from "@mui/material";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import DataTable from "./DataTable";
 import type { RequestItem } from "../../types";
+import type { Column } from "./DataTable";
 
-interface PaymentRequestsTableProps {
-    title?: string;
+interface PaymentRequestsPageProps {
     requests: RequestItem[];
     loading?: boolean;
     error?: string | null;
@@ -27,26 +23,29 @@ interface PaymentRequestsTableProps {
     onReject?: (id: number) => void;
 }
 
-export default function PaymentRequestsTable({
-    title,
+export default function PaymentRequestsPage({
     requests,
     loading = false,
     error = null,
-    showActions = false,
     onApprove,
     onReject,
-}: PaymentRequestsTableProps) {
+}: PaymentRequestsPageProps) {
+    const theme = useTheme();
     const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
 
-    const filteredRequests =
-        filter === "all" ? requests : requests.filter((r) => r.status === filter);
+    const filteredRequests = useMemo(() => {
+        return filter === "all" ? requests : requests.filter((r) => r.status === filter);
+    }, [requests, filter]);
 
-    const counts = {
-        all: requests.length,
-        pending: requests.filter((r) => r.status === "pending").length,
-        approved: requests.filter((r) => r.status === "approved").length,
-        rejected: requests.filter((r) => r.status === "rejected").length,
-    };
+    const counts = useMemo(
+        () => ({
+            all: requests.length,
+            pending: requests.filter((r) => r.status === "pending").length,
+            approved: requests.filter((r) => r.status === "approved").length,
+            rejected: requests.filter((r) => r.status === "rejected").length,
+        }),
+        [requests]
+    );
 
     const formatDate = (dateStr: string) => {
         const date = new Date(dateStr);
@@ -59,172 +58,134 @@ export default function PaymentRequestsTable({
         });
     };
 
+    const columns: Column<RequestItem>[] = useMemo(() => [
+        {
+            key: "status",
+            label: "סטטוס",
+            render: (value: string | number | undefined) => (
+                <Chip
+                    label={value === "pending" ? "ממתין" : value === "approved" ? "אושר" : "נדחה"}
+                    color={value === "pending" ? "warning" : value === "approved" ? "success" : "error"}
+                    variant="outlined"
+                    size="small"
+                />
+            ),
+        },
+        {
+            key: "date",
+            label: "תאריך",
+            render: (value: string | number | undefined) => formatDate(value as string),
+        },
+        { key: "name", label: "שם" },
+        { key: "phone", label: "טלפון" },
+        {
+            key: "amount",
+            label: "סכום",
+            render: (value: string | number | undefined) => (
+                <Typography fontWeight="bold" color="primary">₪ {value}</Typography>
+            ),
+        },
+        ...((onApprove || onReject)
+            ? [
+                {
+                    key: "actions",
+                    label: "פעולות",
+                    render: (_v: undefined, row: RequestItem) =>
+                        row.status === "pending" ? (
+                            <Stack direction="row" spacing={1} justifyContent="center">
+                                <Button
+                                    size="small"
+                                    variant="contained"
+                                    color="success"
+                                    onClick={(e) => { e.stopPropagation(); onApprove?.(row.id); }}
+                                >
+                                    אשר
+                                </Button>
+                                <Button
+                                    size="small"
+                                    variant="contained"
+                                    color="error"
+                                    onClick={(e) => { e.stopPropagation(); onReject?.(row.id); }}
+                                >
+                                    דחה
+                                </Button>
+                            </Stack>
+                        ) : (
+                            <Typography variant="body2" color="text.secondary">אין פעולות</Typography>
+                        ),
+                },
+            ]
+            : []),
+    ], [onApprove, onReject]);
+
     if (loading)
         return (
-            <Box display="flex" justifyContent="center" my={3}>
-                <CircularProgress />
+            <Box display="flex" justifyContent="center" my={6}>
+                <CircularProgress color="primary" />
             </Box>
         );
 
     if (error)
         return (
-            <Typography color="error" textAlign="center">
+            <Typography color="error" textAlign="center" variant="h6" p={3}>
                 {error}
             </Typography>
         );
 
-    if (!requests.length)
-        return (
-            <Typography textAlign="center" sx={{ mt: 2 }}>
-                אין נתונים להצגה
-            </Typography>
-        );
-
     return (
-        <Paper sx={{ overflow: "hidden", direction: "rtl", p: 3 }}>
-            {title && (
-                <Typography variant="h5" sx={{ mb: 2 }}>
-                    {title}
-                </Typography>
-            )}
-
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: 2,
-                    p: 2,
-                    mb: 3,
-                    background: "linear-gradient(90deg, #f5f7fa 0%, #e3f2fd 100%)",
-                    boxShadow: "inset 0 0 10px rgba(0,0,0,0.05)",
-                }}
-            >
-                {[
-                    { key: "all", label: "הצג הכל", color: "#1976d2" },
-                    { key: "pending", label: "ממתינים", color: "#f9a825" },
-                    { key: "approved", label: "מאושרים", color: "#2e7d32" },
-                    { key: "rejected", label: "נדחו", color: "#d32f2f" },
-                ].map(({ key, label, color }) => (
-                    <ButtonBase
-                        key={key}
-                        onClick={() => setFilter(key as any)}
-                        component={motion.div}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.97 }}
-                        sx={{ borderRadius: "9999px" }}
-                    >
-                        <Box
-                            sx={{
-                                px: 3,
-                                py: 1,
-                                borderRadius: "9999px",
-                                border: `1.5px solid ${color}`,
-                                color: filter === key ? "white" : color,
-                                backgroundColor: filter === key ? color : "white",
-                                fontWeight: "bold",
-                                transition: "0.3s",
-                            }}
+        <Box sx={{ direction: "rtl", p: 3 }}>
+            <Box sx={{ mb: 3 }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        gap: 2,
+                        p: 1.5,
+                        background: theme.palette.grey[50],
+                        border: `1px solid ${theme.palette.grey[200]}`,
+                        borderRadius: "9999px",
+                        maxWidth: 600,
+                        mx: 'auto'
+                    }}
+                >
+                    {[
+                        { key: "all", label: `הצג הכל (${counts.all})`, color: theme.palette.primary.main },
+                        { key: "pending", label: `ממתינים (${counts.pending})`, color: theme.palette.warning.main },
+                        { key: "approved", label: `מאושרים (${counts.approved})`, color: theme.palette.success.main },
+                        { key: "rejected", label: `נדחו (${counts.rejected})`, color: theme.palette.error.main },
+                    ].map(({ key, label, color }) => (
+                        <ButtonBase
+                            key={key}
+                            onClick={() => setFilter(key as any)}
+                            component={motion.div}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.97 }}
+                            sx={{ borderRadius: "9999px", flexGrow: 1 }}
                         >
-                            {label}
-                            {key === "pending" && counts.pending > 0 && (
-                                <Box
-                                    component="span"
-                                    sx={{
-                                        ml: 1,
-                                        backgroundColor: "white",
-                                        color,
-                                        borderRadius: "9999px",
-                                        px: 1,
-                                        minWidth: 22,
-                                        fontSize: 13,
-                                        fontWeight: "bold",
-                                    }}
-                                >
-                                    {counts.pending}
-                                </Box>
-                            )}
-                        </Box>
-                    </ButtonBase>
-                ))}
+                            <Box
+                                sx={{
+                                    px: 1.5,
+                                    py: 1,
+                                    borderRadius: "9999px",
+                                    border: `1.5px solid ${color}`,
+                                    color: filter === key ? "white" : color,
+                                    backgroundColor: filter === key ? color : "white",
+                                    fontWeight: "bold",
+                                    transition: "0.3s",
+                                    fontSize: '0.85rem',
+                                    width: '100%',
+                                    textAlign: 'center'
+                                }}
+                            >
+                                {label}
+                            </Box>
+                        </ButtonBase>
+                    ))}
+                </Box>
             </Box>
 
-            <Table>
-                <TableHead>
-                    <TableRow sx={{ backgroundColor: "#e3f2fd" }}>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>סטטוס</TableCell>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>תאריך</TableCell>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>שם</TableCell>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>טלפון</TableCell>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>סכום</TableCell>
-                        {showActions && (
-                            <TableCell align="center" sx={{ fontWeight: "bold" }}>פעולות</TableCell>
-                        )}
-                    </TableRow>
-                </TableHead>
-
-                <TableBody>
-                    {filteredRequests.map((r) => (
-                        <TableRow key={r.id}>
-                            <TableCell align="center">
-                                <Chip
-                                    label={
-                                        r.status === "pending"
-                                            ? "ממתין"
-                                            : r.status === "approved"
-                                                ? "אושר"
-                                                : "נדחה"
-                                    }
-                                    color={
-                                        r.status === "pending"
-                                            ? "warning"
-                                            : r.status === "approved"
-                                                ? "success"
-                                                : "error"
-                                    }
-                                    variant="outlined"
-                                    size="small"
-                                />
-                            </TableCell>
-                            <TableCell align="center">{formatDate(r.date)}</TableCell>
-                            <TableCell align="center">{r.name || "לא צוין שם"}</TableCell>
-                            <TableCell align="center">{r.phone}</TableCell>
-                            <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                                ₪ {r.amount}
-                            </TableCell>
-
-                            {showActions && (
-                                <TableCell align="center">
-                                    {r.status === "pending" ? (
-                                        <Stack direction="row" justifyContent="center" spacing={1}>
-                                            <Button
-                                                size="small"
-                                                variant="contained"
-                                                color="success"
-                                                onClick={() => onApprove?.(r.id)}
-                                            >
-                                                אשר
-                                            </Button>
-                                            <Button
-                                                size="small"
-                                                variant="contained"
-                                                color="error"
-                                                onClick={() => onReject?.(r.id)}
-                                            >
-                                                דחה
-                                            </Button>
-                                        </Stack>
-                                    ) : (
-                                        <Typography variant="body2" color="text.secondary">
-                                            אין פעולות
-                                        </Typography>
-                                    )}
-                                </TableCell>
-                            )}
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </Paper>
+            <DataTable<RequestItem> columns={columns} rows={filteredRequests} />
+        </Box>
     );
 }

@@ -85,7 +85,7 @@ export default function Sidebar({ onLogout }: { onLogout: () => void }) {
         },
         {
             key: "requests",
-            label: "בקשות תשלום",
+            label: "בקשות תשלום שקיבלתי",
             icon: <Payment />,
             path: "/requests",
         },

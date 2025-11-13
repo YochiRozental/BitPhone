@@ -44,7 +44,6 @@ export default function PaymentRequestsList({ user }: { user: User }) {
 
   return (
     <PaymentRequestsTable
-      title="בקשות תשלום נכנסות"
       requests={requests}
       loading={loading}
       error={error}

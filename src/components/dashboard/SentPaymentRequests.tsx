@@ -26,7 +26,6 @@ export default function SentPaymentRequests({ user }: { user: User }) {
 
   return (
     <PaymentRequestsTable
-      title="בקשות תשלום ששלחתי"
       requests={formatted}
       loading={loading}
       error={error}

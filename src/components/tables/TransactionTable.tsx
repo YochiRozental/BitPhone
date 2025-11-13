@@ -1,4 +1,4 @@
-import { Chip, useTheme } from "@mui/material";
+import { Chip } from "@mui/material";
 import DataTable from "./DataTable";
 import { formatDateTime } from "../filters/utils/dateUtils";
 import type { Transaction } from "../../types";
@@ -14,7 +14,6 @@ export default function TransactionTable({
   getActionType,
   onRowClick,
 }: TransactionTableProps) {
-  const theme = useTheme();
 
   const columns = [
     {
@@ -45,7 +44,7 @@ export default function TransactionTable({
       render: (v: any, row: Transaction) => {
         const { color } = getActionType(row.action_type);
         const isCredit = color === "primary" || color === "warning";
-        const amountColor = isCredit ? theme.palette.success.dark : theme.palette.error.dark;
+        const amountColor = isCredit ? 'green' : 'red';
         const prefix = isCredit ? "+" : "-";
         return (
           <span style={{ color: amountColor, fontWeight: "bold", direction: "ltr" }}>
