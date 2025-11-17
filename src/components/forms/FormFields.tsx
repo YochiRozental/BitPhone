@@ -13,6 +13,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import { flex } from "@mui/system";
 
 interface Props {
     data: any;
@@ -70,7 +71,7 @@ export default function FormFields({
                     </Typography>
                     <Divider />
 
-                    <Stack direction="row" spacing={1} width={"100%"}>
+                    <Stack direction="row" justifyContent={"space-between"} spacing={1} gap={1} width={"100%"}>
                         <TextField
                             label="מספר בנק"
                             name="bankNumber"
@@ -79,6 +80,7 @@ export default function FormFields({
                             disabled={readOnly}
                             error={!!errors.bankNumber}
                             helperText={errors.bankNumber}
+                            fullWidth
                             inputProps={{ autocomplete: 'off' }}
                             InputProps={{
                                 startAdornment: (
@@ -97,6 +99,7 @@ export default function FormFields({
                             disabled={readOnly}
                             error={!!errors.branchNumber}
                             helperText={errors.branchNumber}
+                            fullWidth
                             inputProps={{ autocomplete: 'off' }}
                             InputProps={{
                                 startAdornment: (

@@ -36,8 +36,8 @@ export default function AuthForm({
     };
 
     return (
-        <Box display="flex" justifyContent="center" py={6} sx={{ bgcolor: "#f5f7fa" }}>
-            <Paper sx={{ p: 5, width: "100%", maxWidth: 500, borderRadius: 3 }}>
+        <Box display="flex" justifyContent="center" py={6} sx={{ bgcolor: "#f5f7fa", direction: 'rtl' }}>
+            <Paper sx={{ p: 5, width: "100%", maxWidth: 600, borderRadius: 3 }}>
                 <Typography variant="h4" textAlign="center" mb={2}>
                     {isReg ? "פתיחת חשבון" : "התחברות"}
                 </Typography>

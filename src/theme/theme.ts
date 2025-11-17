@@ -55,12 +55,6 @@ const theme = createTheme(
                     },
                 },
             },
-            MuiInputLabel: {
-                styleOverrides: {
-                    root: { transformOrigin: "top right" },
-                    shrink: { transformOrigin: "top right", right: "auto" },
-                },
-            },
         },
     },
     heIL

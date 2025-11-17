@@ -31,8 +31,8 @@ export default function UserForm({
     const { data, errors, onChange, validate } = useUserForm(initialData, false);
 
     return (
-        <Box display="flex" justifyContent="center" py={4}>
-            <Paper sx={{ p: 5, maxWidth: 600, width: "100%" }}>
+        <Box display="flex" justifyContent="center" py={4} sx={{ bgcolor: "#f5f7fa" }}>
+            <Paper sx={{ p: 5, maxWidth: 600, width: "100%", borderRadius: 3 }}>
                 <Typography variant="h4" textAlign="center" mb={3}>
                     פרטי פרופיל
                 </Typography>
